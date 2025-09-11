@@ -9,13 +9,15 @@ import BrandsManager from './BrandsManager'
 import SystemConfigManager from './SystemConfigManager'
 import UsersManager from './UsersManager'
 import FileManagementPage from './FileManagementPage'
+import FirebaseDebugger from './FirebaseDebugger'
 import { 
   BuildingStorefrontIcon,
   TagIcon,
   CogIcon,
   UsersIcon,
   ChartBarIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  WrenchScrewdriverIcon
 } from '@heroicons/react/24/outline'
 
 export default function AdminDashboard() {
@@ -77,6 +79,12 @@ export default function AdminDashboard() {
       name: 'Archivos',
       icon: DocumentTextIcon,
       description: 'Gestión de archivos del sistema'
+    },
+    {
+      id: 'debug',
+      name: 'Firebase Debug',
+      icon: WrenchScrewdriverIcon,
+      description: 'Depurar colecciones de Firebase'
     }
   ]
 
@@ -96,6 +104,8 @@ export default function AdminDashboard() {
         return <ContentManager />
       case 'files':
         return <FileManagementPage />
+      case 'debug':
+        return <FirebaseDebugger />
       default:
         return <AdminOverview />
     }
