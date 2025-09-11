@@ -7,7 +7,7 @@ import {
   doc, 
   serverTimestamp 
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase/config'
+import { db } from '@/lib/firebase'
 import { 
   UsersIcon,
   PencilIcon,

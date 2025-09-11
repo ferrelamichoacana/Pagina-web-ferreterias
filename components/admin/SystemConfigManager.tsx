@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSystemConfig } from '@/lib/hooks/useFirebaseData'
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore'
-import { db } from '@/lib/firebase/config'
+import { db } from '@/lib/firebase'
 import { 
   CogIcon,
   BuildingOfficeIcon,

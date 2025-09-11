@@ -13,7 +13,7 @@ import {
   serverTimestamp,
   Timestamp 
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase/config'
+import { db } from '@/lib/firebase'
 import type { 
   User, 
   ContactRequest, 

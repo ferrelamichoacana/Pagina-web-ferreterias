@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore'
-import { db } from '@/lib/firebase/config'
+import { db } from '@/lib/firebase'
 import { sendContactConfirmation } from '@/lib/utils/email'
 import { createSystemLog } from '@/lib/utils/firestore'
 

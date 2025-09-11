@@ -12,7 +12,7 @@ import {
   where, 
   orderBy 
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase/config'
+import { db } from '@/lib/firebase'
 import { realBranches, realBrands } from '@/lib/data/realData'
 
 // Types para los datos

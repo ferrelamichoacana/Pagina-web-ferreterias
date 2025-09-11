@@ -11,7 +11,7 @@ import {
   orderBy,
   serverTimestamp 
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase/config'
+import { db } from '@/lib/firebase'
 
 // GET - Obtener todas las noticias
 export async function GET(request: NextRequest) {

@@ -24,7 +24,7 @@ export default function FirebaseDebugConsole() {
         // Intentar importar Firebase de forma dinámica
         import('@/lib/firebase').then(firebase => {
           console.log('🔥 Firebase import successful:', firebase)
-          setDebugInfo(prev => ({
+          setDebugInfo((prev: any) => ({
             ...prev,
             firebaseImportStatus: '✅ Firebase importado correctamente',
             firebaseDb: firebase.db ? '✅ DB inicializada' : '❌ DB no inicializada',
@@ -32,7 +32,7 @@ export default function FirebaseDebugConsole() {
           }))
         }).catch(error => {
           console.error('❌ Firebase import failed:', error)
-          setDebugInfo(prev => ({
+          setDebugInfo((prev: any) => ({
             ...prev,
             firebaseImportStatus: `❌ Error: ${error.message}`,
             firebaseError: error

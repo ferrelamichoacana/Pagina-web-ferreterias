@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { collection, addDoc } from 'firebase/firestore'
-import { db } from '@/lib/firebase/config'
+import { db } from '@/lib/firebase'
 import { useSimpleFirebaseData } from '@/lib/hooks/useSimpleFirebaseData'
 
 export default function FirebaseSetupPage() {

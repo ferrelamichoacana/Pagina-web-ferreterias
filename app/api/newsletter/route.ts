@@ -8,7 +8,7 @@ import {
   serverTimestamp,
   updateDoc
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase/config'
+import { db } from '@/lib/firebase'
 
 export async function POST(request: NextRequest) {
   try {
