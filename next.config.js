@@ -22,6 +22,11 @@ const nextConfig = {
     optimizePackageImports: ['@next/font']
   },
 
+  // Variables de entorno para build-time
+  env: {
+    SKIP_ENV_VALIDATION: process.env.NODE_ENV === 'production' ? 'true' : 'false'
+  },
+
   // Configuración de headers básicos
   async headers() {
     return [
@@ -42,11 +47,24 @@ const nextConfig = {
   },
 
   // Configuración de webpack simplificada
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': require('path').resolve(__dirname)
     }
+
+    // Configuración específica para el servidor durante el build
+    if (isServer) {
+      // Evitar que Firebase se inicialice durante el build si no hay variables de entorno
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+      }
+    }
+
     return config
   },
 

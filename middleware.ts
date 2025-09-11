@@ -3,22 +3,23 @@ import type { NextRequest } from 'next/server'
 
 // Middleware simplificado - Firebase Auth maneja la autenticación
 export function middleware(request: NextRequest) {
-  // Por ahora, solo permitir que todas las rutas pasen
-  // Firebase Auth maneja la protección de rutas en el cliente
+  const { pathname } = request.nextUrl
+  
+  // Permitir todas las rutas por ahora
+  // Firebase Auth maneja la protección en el cliente
   return NextResponse.next()
 }
 
-// Configurar en qué rutas se ejecuta el middleware
+// Configurar en qué rutas se ejecuta el middleware - más específico
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
+     * Match only specific protected paths:
+     * - /dashboard (admin/user dashboards)
+     * - /profile (user profiles)
+     * Skip API routes, static files, and public assets
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
+    '/dashboard/:path*',
+    '/profile/:path*'
   ],
 }

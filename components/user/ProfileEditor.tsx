@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { useLanguage } from '@/lib/i18n/LanguageProvider'
 import { updateUserProfile, getUserProfile } from '@/lib/utils/firestore'
-import { branches } from '@/lib/data/branches'
+import { useBranches } from '@/lib/hooks/useFirebaseData'
 import { UserIcon, BuildingOfficeIcon, PhoneIcon, MapPinIcon } from '@heroicons/react/24/outline'
 
 interface UserProfile {
@@ -21,6 +21,7 @@ interface UserProfile {
 export default function ProfileEditor() {
   const { user } = useAuth()
   const { t } = useLanguage()
+  const { branches, loading: branchesLoading } = useBranches()
   const [profile, setProfile] = useState<UserProfile>({
     displayName: '',
     email: '',
@@ -275,9 +276,10 @@ export default function ProfileEditor() {
                 value={profile.branchId}
                 onChange={handleInputChange}
                 className="input-field"
+                disabled={branchesLoading}
               >
-                <option value="">Seleccionar sucursal</option>
-                {branches.map(branch => (
+                <option value="">{branchesLoading ? 'Cargando sucursales...' : 'Seleccionar sucursal'}</option>
+                {branches?.map(branch => (
                   <option key={branch.id} value={branch.id}>
                     {branch.name} - {branch.city}, {branch.state}
                   </option>

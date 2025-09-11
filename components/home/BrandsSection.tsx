@@ -3,7 +3,7 @@
 import React from 'react'
 import Image from 'next/image'
 import { useLanguage } from '@/lib/i18n/LanguageProvider'
-import { useBrands } from '@/lib/hooks/useSimpleFirebaseData'
+import { useBrands } from '@/lib/hooks/useFirebaseData'
 
 export default function BrandsSection() {
   const { t } = useLanguage()

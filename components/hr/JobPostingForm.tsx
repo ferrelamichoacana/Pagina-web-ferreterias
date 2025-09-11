@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { branches } from '@/lib/data/branches'
+import { useBranches } from '@/lib/hooks/useFirebaseData'
 import { 
   BriefcaseIcon,
   XMarkIcon,
@@ -36,12 +36,13 @@ interface JobPostingFormProps {
 }
 
 export default function JobPostingForm({ 
-  isOpen, 
+  isOpen,
   onClose, 
   onSubmit, 
   initialData,
   isEditing = false 
 }: JobPostingFormProps) {
+  const { branches, loading: branchesLoading } = useBranches()
   const [formData, setFormData] = useState<JobPostingFormData>({
     title: initialData?.title || '',
     department: initialData?.department || '',
@@ -187,9 +188,10 @@ export default function JobPostingForm({
                 onChange={handleInputChange}
                 required
                 className="input-field"
+                disabled={branchesLoading}
               >
-                <option value="">Seleccionar sucursal</option>
-                {branches.map(branch => (
+                <option value="">{branchesLoading ? 'Cargando sucursales...' : 'Seleccionar sucursal'}</option>
+                {branches?.map(branch => (
                   <option key={branch.id} value={branch.id}>
                     {branch.name} - {branch.city}, {branch.state}
                   </option>

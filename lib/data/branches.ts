@@ -3,13 +3,13 @@
 
 export const branches = [
   {
-    id: 'morelia-centro',
-    name: 'Sucursal Morelia Centro',
+    id: 'puente',
+    name: 'Sucursal Puente',
     city: 'Morelia',
     state: 'Michoacán',
-    address: 'Av. Madero #123, Centro Histórico',
+    address: 'Av. Puente #123, Col. Puente',
     phone: '(443) 123-4567',
-    email: 'morelia@ferreterialamichoacana.com',
+    email: 'puente@ferreterialamichoacana.com',
     schedule: 'Lun-Vie: 8:00-19:00, Sáb: 8:00-17:00, Dom: 9:00-15:00',
     coordinates: { lat: 19.7026, lng: -101.1947 },
     isMain: true,
@@ -17,15 +17,15 @@ export const branches = [
     services: ['Venta al público', 'Venta mayorista', 'Entrega a domicilio', 'Asesoría técnica']
   },
   {
-    id: 'uruapan',
-    name: 'Sucursal Uruapan',
-    city: 'Uruapan',
+    id: 'santa-barbara',
+    name: 'Sucursal Santa Barbara',
+    city: 'Morelia',
     state: 'Michoacán',
-    address: 'Blvd. Industrial #456, Col. Industrial',
-    phone: '(452) 234-5678',
-    email: 'uruapan@ferreterialamichoacana.com',
+    address: 'Av. Santa Barbara #456, Col. Santa Barbara',
+    phone: '(443) 234-5678',
+    email: 'santabarbara@ferreterialamichoacana.com',
     schedule: 'Lun-Vie: 8:00-18:00, Sáb: 8:00-16:00',
-    coordinates: { lat: 19.4215, lng: -102.0630 },
+    coordinates: { lat: 19.6888, lng: -101.1844 },
     isMain: false,
     managerId: null,
     services: ['Venta al público', 'Venta mayorista', 'Entrega a domicilio']

@@ -139,11 +139,15 @@ export interface NewsItem {
   id: string
   title: string
   description: string
+  type: 'noticia' | 'promocion'
   imageUrl?: string
   link?: string
+  featured?: boolean
+  date: Date
   active: boolean
   order: number
   createdAt: Date
+  updatedAt: Date
 }
 
 export interface Testimonial {

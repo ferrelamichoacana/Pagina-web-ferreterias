@@ -4,15 +4,6 @@ import React, { useState, useCallback } from 'react'
 import { useBrands } from '@/lib/hooks/useFirebaseData'
 import { uploadWithPreset } from '@/lib/utils/cloudinary'
 import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  serverTimestamp 
-} from 'firebase/firestore'
-import { db } from '@/lib/firebase/config'
-import { 
   PlusIcon, 
   PencilIcon, 
   TrashIcon,
@@ -179,24 +170,56 @@ export default function BrandsManager() {
 
     try {
       if (editingBrand) {
-        // Actualizar marca existente
-        await updateDoc(doc(db, 'brands', editingBrand.id), {
-          ...formData,
-          updatedAt: serverTimestamp()
+        // Actualizar marca existente usando API
+        const response = await fetch('/api/brands', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: editingBrand.id,
+            name: formData.name,
+            logo: formData.logoUrl,
+            category: formData.category,
+            description: formData.description,
+            website: formData.website,
+            active: formData.active
+          })
         })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.error || 'Error al actualizar marca')
+        }
       } else {
-        // Crear nueva marca
-        await addDoc(collection(db, 'brands'), {
-          ...formData,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
+        // Crear nueva marca usando API
+        const response = await fetch('/api/brands', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            logo: formData.logoUrl,
+            category: formData.category,
+            description: formData.description,
+            website: formData.website,
+            active: formData.active
+          })
         })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.error || 'Error al crear marca')
+        }
       }
       
       resetForm()
+      // Refresh data
+      window.location.reload()
     } catch (error) {
       console.error('Error saving brand:', error)
-      alert('Error al guardar la marca')
+      alert(`Error al guardar la marca: ${error instanceof Error ? error.message : 'Error desconocido'}`)
     } finally {
       setIsSubmitting(false)
     }
@@ -205,23 +228,47 @@ export default function BrandsManager() {
   const handleDelete = async (brandId: string, brandName: string) => {
     if (window.confirm(`¿Estás seguro de que quieres eliminar la marca "${brandName}"?`)) {
       try {
-        await deleteDoc(doc(db, 'brands', brandId))
+        const response = await fetch(`/api/brands?id=${brandId}`, {
+          method: 'DELETE'
+        })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.error || 'Error al eliminar marca')
+        }
+
+        // Refresh data
+        window.location.reload()
       } catch (error) {
         console.error('Error deleting brand:', error)
-        alert('Error al eliminar la marca')
+        alert(`Error al eliminar la marca: ${error instanceof Error ? error.message : 'Error desconocido'}`)
       }
     }
   }
 
   const toggleActive = async (brand: Brand) => {
     try {
-      await updateDoc(doc(db, 'brands', brand.id), {
-        active: !brand.active,
-        updatedAt: serverTimestamp()
+      const response = await fetch('/api/brands', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: brand.id,
+          active: !brand.active
+        })
       })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Error al actualizar estado')
+      }
+
+      // Refresh data
+      window.location.reload()
     } catch (error) {
       console.error('Error updating brand status:', error)
-      alert('Error al actualizar el estado de la marca')
+      alert(`Error al actualizar el estado de la marca: ${error instanceof Error ? error.message : 'Error desconocido'}`)
     }
   }
 

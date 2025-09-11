@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/lib/i18n/LanguageProvider'
-import { useSystemConfig } from '@/lib/hooks/useSimpleFirebaseData'
+import { useSystemConfig } from '@/lib/hooks/useSystemConfig'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 
 export default function HeroSection() {

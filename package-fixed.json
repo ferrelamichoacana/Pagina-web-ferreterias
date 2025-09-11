@@ -16,8 +16,7 @@
     "init-firestore": "npx ts-node --project tsconfig.node.json scripts/init-firestore.ts",
     "migrate-branches": "npx ts-node --project tsconfig.node.json scripts/migrate-branches.ts",
     "migrate-brands": "npx ts-node --project tsconfig.node.json scripts/migrate-brands.ts",
-    "create-admin": "node scripts/create-admin-user.js",
-    "setup-firestore": "npm run migrate-branches && npm run migrate-brands && npm run create-admin",
+    "setup-firestore": "npm run migrate-branches && npm run migrate-brands",
     "clean": "node start-clean.js",
     "fresh": "npm run clean"
   },

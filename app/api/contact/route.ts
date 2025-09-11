@@ -18,6 +18,15 @@ function isValidPhone(phone: string): boolean {
 
 export async function POST(request: NextRequest) {
   try {
+    // Verificar si Firebase está disponible
+    if (!db) {
+      console.warn('⚠️ Firebase no está configurado correctamente')
+      return NextResponse.json(
+        { success: false, error: 'Servicio temporalmente no disponible' },
+        { status: 503 }
+      )
+    }
+
     const body = await request.json()
     
     // Validar campos requeridos

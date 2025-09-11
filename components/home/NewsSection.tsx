@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useLanguage } from '@/lib/i18n/LanguageProvider'
+import { useNews } from '@/lib/hooks/useFirebaseData'
 import { 
   CalendarDaysIcon, 
   ArrowRightIcon,
@@ -14,6 +15,7 @@ import {
 
 export default function NewsSection() {
   const { t } = useLanguage()
+  const { news, loading, error } = useNews()
   const [email, setEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState('')
@@ -59,50 +61,25 @@ export default function NewsSection() {
     }
   }
 
-  // Noticias y promociones - Estructura editable fácilmente
-  // En el futuro se puede conectar a Firestore para gestión dinámica
-  const newsItems = [
+  // Datos mock como fallback
+  const mockNewsItems = [
     {
-      id: 1,
-      type: 'promocion',
-      title: 'Gran Promoción de Herramientas Eléctricas',
-      description: 'Hasta 30% de descuento en herramientas DeWalt, Makita y Bosch. Válido hasta fin de mes en todas nuestras sucursales.',
-      imageUrl: '/images/promo-herramientas.jpg', // Placeholder
-      date: '2024-01-15',
+      id: '1',
+      type: 'noticia',
+      title: '¡Celebramos nuestro 8vo Aniversario con nueva página web!',
+      description: 'Estamos de fiesta. Ferretería La Michoacana cumple 8 años sirviendo a la comunidad y lo celebramos estrenando nuestra nueva página web con mejor experiencia para nuestros clientes.',
+      imageUrl: '/images/8vo-aniversario.jpg',
+      date: new Date('2025-09-11'),
       featured: true,
-      link: '/promociones/herramientas-electricas'
-    },
-    {
-      id: 2,
-      type: 'noticia',
-      title: 'Nueva Sucursal en León, Guanajuato',
-      description: 'Nos complace anunciar la apertura de nuestra quinta sucursal, ahora también en León, Guanajuato, para estar más cerca de ti.',
-      imageUrl: '/images/sucursal-leon.jpg', // Placeholder
-      date: '2024-01-10',
-      featured: false,
-      link: '/noticias/nueva-sucursal-leon'
-    },
-    {
-      id: 3,
-      type: 'promocion',
-      title: 'Descuentos Especiales para Constructores',
-      description: 'Precios preferenciales en compras mayoristas. Cotiza tu proyecto y obtén los mejores precios del mercado.',
-      imageUrl: '/images/promo-constructores.jpg', // Placeholder
-      date: '2024-01-08',
-      featured: false,
-      link: '/contacto'
-    },
-    {
-      id: 4,
-      type: 'noticia',
-      title: 'Nuevas Marcas en Nuestro Catálogo',
-      description: 'Incorporamos nuevas marcas de prestigio internacional para ofrecerte mayor variedad y calidad en todos nuestros productos.',
-      imageUrl: '/images/nuevas-marcas.jpg', // Placeholder
-      date: '2024-01-05',
-      featured: false,
-      link: '/noticias/nuevas-marcas'
+      link: '/noticias/8vo-aniversario-nueva-web',
+      active: true,
+      createdAt: new Date('2025-09-11'),
+      updatedAt: new Date('2025-09-11')
     }
   ]
+
+  // Usar datos de Firebase o fallback a mock
+  const newsItems = error || !news?.length ? mockNewsItems : news
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -126,9 +103,9 @@ export default function NewsSection() {
     }
   }
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('es-MX', {
+  const formatDate = (date: string | Date) => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date
+    return dateObj.toLocaleDateString('es-MX', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -178,7 +155,7 @@ export default function NewsSection() {
                         {featuredItem.description}
                       </p>
                       
-                      {featuredItem.type === 'noticia' && (
+                      {featuredItem.type === 'noticia' && featuredItem.link && (
                         <Link
                           href={featuredItem.link}
                           className="btn-primary inline-flex items-center space-x-2"
@@ -241,7 +218,7 @@ export default function NewsSection() {
                     {item.description}
                   </p>
                   
-                  {item.type === 'noticia' && (
+                  {item.type === 'noticia' && item.link && (
                     <Link
                       href={item.link}
                       className="text-primary-600 hover:text-primary-700 font-medium text-sm inline-flex items-center space-x-1 group"

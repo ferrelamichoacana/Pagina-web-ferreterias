@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useLanguage } from '@/lib/i18n/LanguageProvider'
-import { useSystemConfig } from '@/lib/hooks/useSimpleFirebaseData'
+import { useSystemConfig } from '@/lib/hooks/useSystemConfig'
 import { 
   BuildingStorefrontIcon,
   UserGroupIcon,

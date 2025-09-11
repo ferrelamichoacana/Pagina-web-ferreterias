@@ -3,15 +3,6 @@
 import React, { useState } from 'react'
 import { useBranches } from '@/lib/hooks/useFirebaseData'
 import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  serverTimestamp 
-} from 'firebase/firestore'
-import { db } from '@/lib/firebase/config'
-import { 
   PlusIcon, 
   PencilIcon, 
   TrashIcon,
@@ -115,24 +106,44 @@ export default function BranchesManager() {
 
     try {
       if (editingBranch) {
-        // Actualizar sucursal existente
-        await updateDoc(doc(db, 'branches', editingBranch.id), {
-          ...formData,
-          updatedAt: serverTimestamp()
+        // Actualizar sucursal existente usando API
+        const response = await fetch('/api/branches', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: editingBranch.id,
+            ...formData
+          })
         })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.error || 'Error al actualizar sucursal')
+        }
       } else {
-        // Crear nueva sucursal
-        await addDoc(collection(db, 'branches'), {
-          ...formData,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
+        // Crear nueva sucursal usando API
+        const response = await fetch('/api/branches', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
         })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.error || 'Error al crear sucursal')
+        }
       }
       
       resetForm()
+      // Refresh data
+      window.location.reload()
     } catch (error) {
       console.error('Error saving branch:', error)
-      alert('Error al guardar la sucursal')
+      alert(`Error al guardar la sucursal: ${error instanceof Error ? error.message : 'Error desconocido'}`)
     } finally {
       setIsSubmitting(false)
     }
@@ -141,10 +152,20 @@ export default function BranchesManager() {
   const handleDelete = async (branchId: string, branchName: string) => {
     if (window.confirm(`¿Estás seguro de que quieres eliminar la sucursal "${branchName}"?`)) {
       try {
-        await deleteDoc(doc(db, 'branches', branchId))
+        const response = await fetch(`/api/branches?id=${branchId}`, {
+          method: 'DELETE'
+        })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.error || 'Error al eliminar sucursal')
+        }
+
+        // Refresh data
+        window.location.reload()
       } catch (error) {
         console.error('Error deleting branch:', error)
-        alert('Error al eliminar la sucursal')
+        alert(`Error al eliminar la sucursal: ${error instanceof Error ? error.message : 'Error desconocido'}`)
       }
     }
   }

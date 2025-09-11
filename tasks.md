@@ -1,5 +1,68 @@
 # Lista de Tareas - Ferretería La Michoacana
 
+## 🔥 FASE ACTUAL: Noticias/Promociones Firebase ✅ COMPLETADA
+
+### Migración de Noticias/Promociones ✅
+- [x] ✅ Eliminar promociones ejemplo y datos obsoletos
+- [x] ✅ Crear noticia única: "8vo Aniversario + Nueva Web"
+- [x] ✅ Actualizar interfaz NewsItem con propiedades necesarias
+- [x] ✅ Conectar NewsSection a usar datos dinámicos de Firebase
+- [x] ✅ Crear API `/api/news` con CRUD completo
+- [x] ✅ Fallbacks cuando Firebase no disponible
+- [x] ✅ Loading states y validaciones
+
+### APIs REST Noticias ✅
+- [x] ✅ GET `/api/news` - Obtener noticias con filtros
+- [x] ✅ POST `/api/news` - Crear noticias
+- [x] ✅ PUT `/api/news` - Actualizar noticias
+- [x] ✅ DELETE `/api/news` - Eliminar noticias (soft delete)
+- [x] ✅ Validaciones de tipo (noticia/promocion)
+- [x] ✅ Validaciones de URLs y campos requeridos
+
+## 🔥 FASE ACTUAL: Datos Reales Firebase ✅ COMPLETADA
+
+### Migración de Sucursales ✅
+- [x] ✅ Actualizar datos mock: "Sucursal Puente" y "Sucursal Santa Barbara"
+- [x] ✅ Actualizar `lib/data/branches.ts` con sucursales reales
+- [x] ✅ Actualizar `lib/hooks/useSimpleFirebaseData.ts` con datos reales
+- [x] ✅ Actualizar scripts de migración con sucursales reales
+- [x] ✅ Conectar ContactForm a usar datos dinámicos de Firebase
+- [x] ✅ Eliminar dependencias de archivos estáticos en formularios
+
+### Componentes Actualizados ✅
+- [x] ✅ ContactForm ahora usa `useBranches()` hook
+- [x] ✅ JobListings ahora usa `useBranches()` hook
+- [x] ✅ JobPostingForm ahora usa `useBranches()` hook
+- [x] ✅ ProfileEditor ahora usa `useBranches()` hook
+- [x] ✅ Dropdown de sucursales carga datos desde Firebase en todos los componentes
+- [x] ✅ Loading states implementados para sucursales
+- [x] ✅ Fallbacks a datos mock cuando Firebase no disponible
+- [x] ✅ Eliminadas todas las importaciones estáticas de `lib/data/branches`
+
+## 🔥 FASE ACTUAL: APIs y Backend (Migración Firebase) ✅ COMPLETADA
+
+### APIs REST Creadas ✅
+- [x] ✅ API Sucursales (`/api/branches`) - CRUD completo
+- [x] ✅ API Marcas (`/api/brands`) - CRUD completo  
+- [x] ✅ Conectar BranchesManager a nueva API
+- [x] ✅ Conectar BrandsManager a nueva API
+
+### Estado de Migración Firebase ✅
+- [x] ✅ Hooks de Firebase actualizados con conexiones reales
+- [x] ✅ Scripts de migración creados (branches, brands)
+- [x] ✅ Interface de testing Firebase (`/firebase-setup`)
+- [x] ✅ Fallbacks para desarrollo sin Firebase
+- [x] ✅ Componentes admin conectados a APIs REST
+- [x] ✅ Eliminación de dependencias Firebase directas en componentes
+
+### Próximas Fases
+- [ ] 🔄 Crear API de usuarios (`/api/users`)
+- [ ] 🔄 Crear API de cotizaciones (`/api/quotations`)
+- [ ] 🔄 Ejecutar migración de datos con credenciales Admin
+- [ ] 🔄 Validar autenticación con usuarios reales
+
+---
+
 ## Configuración Inicial del Proyecto
 - [x] Setup de Next.js 13+ con App Router y TypeScript
 - [x] Configuración de Tailwind CSS con paleta corporativa

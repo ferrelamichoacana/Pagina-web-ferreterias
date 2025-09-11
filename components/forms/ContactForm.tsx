@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useLanguage } from '@/lib/i18n/LanguageProvider'
-import { branches } from '@/lib/data/branches'
+import { useBranches } from '@/lib/hooks/useFirebaseData'
 import SimpleCaptcha from '@/components/ui/SimpleCaptcha'
 import FileManager from '@/components/files/FileManager'
 import { PaperClipIcon } from '@heroicons/react/24/outline'
@@ -22,6 +22,7 @@ interface ContactFormData {
 
 export default function ContactForm() {
   const { t } = useLanguage()
+  const { branches, loading: branchesLoading } = useBranches()
   const [formData, setFormData] = useState<ContactFormData>({
     companyName: '',
     contactName: '',
@@ -207,9 +208,10 @@ export default function ContactForm() {
             value={formData.branchId}
             onChange={handleInputChange}
             className="input-field"
+            disabled={branchesLoading}
           >
-            <option value="">{t.contact.selectBranch}</option>
-            {branches.map(branch => (
+            <option value="">{branchesLoading ? 'Cargando sucursales...' : t.contact.selectBranch}</option>
+            {branches?.map(branch => (
               <option key={branch.id} value={branch.id}>
                 {branch.name} - {branch.city}, {branch.state}
               </option>

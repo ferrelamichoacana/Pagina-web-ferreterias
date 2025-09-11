@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useLanguage } from '@/lib/i18n/LanguageProvider'
-import { useBranches } from '@/lib/hooks/useSimpleFirebaseData'
+import { useBranches } from '@/lib/hooks/useFirebaseData'
 import { 
   MapPinIcon, 
   PhoneIcon, 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useLanguage } from '@/lib/i18n/LanguageProvider'
-import { branches } from '@/lib/data/branches'
+import { useBranches } from '@/lib/hooks/useFirebaseData'
 import { 
   BriefcaseIcon,
   MapPinIcon,
@@ -38,6 +38,7 @@ interface JobPosting {
 
 export default function JobListings() {
   const { t } = useLanguage()
+  const { branches, loading: branchesLoading } = useBranches()
   const [jobs, setJobs] = useState<JobPosting[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedBranch, setSelectedBranch] = useState<string>('')
@@ -168,9 +169,10 @@ export default function JobListings() {
               value={selectedBranch}
               onChange={(e) => setSelectedBranch(e.target.value)}
               className="input-field"
+              disabled={branchesLoading}
             >
-              <option value="">Todas las sucursales</option>
-              {branches.map(branch => (
+              <option value="">{branchesLoading ? 'Cargando sucursales...' : 'Todas las sucursales'}</option>
+              {branches?.map(branch => (
                 <option key={branch.id} value={branch.id}>
                   {branch.name} - {branch.city}
                 </option>
