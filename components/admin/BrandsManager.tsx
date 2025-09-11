@@ -7,6 +7,7 @@ import FirebaseConnectionTest from './FirebaseConnectionTest'
 import FirebaseStatusIndicator from './FirebaseStatusIndicator'
 import VercelEnvTest from './VercelEnvTest'
 import FirebaseDebugConsole from './FirebaseDebugConsole'
+import VercelEnvDebugger from './VercelEnvDebugger'
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -385,6 +386,11 @@ export default function BrandsManager() {
           </div>
         </div>
       )}
+
+      {/* 🔍 DEBUGGERS DE VERCEL - Verificación completa */}
+      
+      {/* Debug desde el servidor de Vercel */}
+      <VercelEnvDebugger />
 
       {/* Console de debug completo */}
       <FirebaseDebugConsole />
