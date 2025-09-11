@@ -1,0 +1,96 @@
+{
+  "name": "Ferretería La Michoacana",
+  "short_name": "Ferretería LM",
+  "description": "Ferretería líder en materiales de construcción. Encuentra todo lo que necesitas para tu proyecto.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#42542D",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es-MX",
+  "categories": ["business", "shopping"],
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Solicitar Cotización",
+      "short_name": "Cotización",
+      "description": "Solicita una cotización rápida",
+      "url": "/contacto",
+      "icons": [
+        {
+          "src": "/icons/quote-icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Ver Empleos",
+      "short_name": "Empleos",
+      "description": "Explora oportunidades laborales",
+      "url": "/empleos",
+      "icons": [
+        {
+          "src": "/icons/jobs-icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Sucursales",
+      "short_name": "Ubicaciones",
+      "description": "Encuentra nuestras sucursales",
+      "url": "/sucursales",
+      "icons": [
+        {
+          "src": "/icons/location-icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Página principal en desktop"
+    },
+    {
+      "src": "/screenshots/mobile-home.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Página principal en móvil"
+    }
+  ]
+}
