@@ -34,31 +34,11 @@ const nextConfig = {
   },
 
   // Configuración de webpack simplificada
-  webpack: (config, { isServer }) => {
+  webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': require('path').resolve(__dirname)
     }
-    
-    // Configuración para Cloudinary en el cliente
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        path: false,
-        os: false,
-        crypto: false,
-        stream: false,
-        buffer: false,
-        util: false,
-        url: false,
-        querystring: false,
-        http: false,
-        https: false,
-        zlib: false
-      }
-    }
-    
     return config
   },
 

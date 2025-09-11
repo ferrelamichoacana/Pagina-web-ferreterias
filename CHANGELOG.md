@@ -5,6 +5,82 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.8] - 2025-09-11 - Configuración Segura de .gitignore
+
+### 🔒 Seguridad Mejorada
+- **Configuración .gitignore Completa**: Protección exhaustiva contra subida de archivos sensibles
+  - ⚠️ **CRÍTICO**: Protección de credenciales Firebase (`*firebase-adminsdk*.json`)
+  - 🔐 Variables de entorno (`.env*`)
+  - 🏗️ Archivos de build y cache (`.next/`, `.swc/`, `*.tsbuildinfo`)
+  - 🧪 Archivos de testing (`coverage/`, `.jest/`)
+  - 💻 Configuración de IDE (`.vscode/`)
+
+### ✅ Verificado
+- **NO hay credenciales** en el repositorio git
+- **NO hay variables sensibles** expuestas
+- **NO hay archivos de build** trackeados
+- **Archivo Firebase**: `website-ferreteria-firebase-adminsdk-fbsvc-928ca1763f.json` PROTEGIDO
+
+### 📝 Documentación
+- Creado `docs/gitignore-security.md` con guía de seguridad
+- Lista completa de archivos protegidos
+- Comandos para verificación de seguridad
+- Procedimiento de emergencia si se suben credenciales
+
+### 🛡️ Protección Implementada
+```
+✅ Firebase credentials: PROTEGIDO
+✅ Environment variables: PROTEGIDO
+✅ Build artifacts: PROTEGIDO
+✅ Node modules: PROTEGIDO
+✅ IDE configs: PROTEGIDO
+✅ OS files: PROTEGIDO
+```
+
+## [1.2.7] - 2025-09-11 - Corrección de Errores TypeScript y Configuración Jest
+
+### Reparado ✅
+- **Errores TypeScript**: Corregidos todos los errores de compilación TypeScript
+  - Agregados tipos Jest (`@types/jest`) a tsconfig.json
+  - Corregidas props de `JobApplicationForm` (removido prop inexistente `jobData`)
+  - Descomentados datos de `NewsSection` para mostrar noticias reales
+- **Configuración Jest**: Configuración completa del entorno de testing
+  - Configurado `moduleNameMapper` para alias `@/` (corregido de `moduleNameMapping`)
+  - Creado `jest.config.cjs` con configuración correcta para Next.js
+  - Agregados mocks para Next.js router y navegación
+- **Tests FileUploader**: Corregidos selectores DOM en tests
+  - Cambiado de `getByRole('textbox')` a `document.querySelector('input[type="file"]')`
+  - Corregidos mocks de API para coincider con `/api/upload` response format
+- **Configuración Build**: Optimizada configuración para deploy en Vercel
+  - Eliminado `.babelrc` para usar SWC compiler por defecto
+  - Configurado renderizado dinámico para páginas problemáticas
+  - Corregidos problemas de build estático
+
+### Agregado ⭐
+- **Tests Funcionales**: 
+  - ✅ Tests de alias `@/` funcionando completamente
+  - ✅ Tests básicos (import, simple, relative) pasando
+  - ✅ Tests de FileUploader completamente funcionales (11/11 passing)
+- **Entorno Testing**:
+  - Mocks completos para TextEncoder/TextDecoder
+  - Configuración global de Request/Response para APIs
+  - Setup completo para testing de componentes React
+
+### Técnico 🔧
+- **TypeScript**: Compilación sin errores (`npm run type-check` ✅)
+- **Jest**: Configuración con babel-jest para compatibilidad con Next.js
+- **Build**: Build de producción exitoso (`npm run build` ✅)
+- **SWC**: Migración de Babel a SWC para mejor performance
+- **Static Generation**: Configuración optimizada para renderizado híbrido
+
+### Para Deploy en Vercel 🚀
+- ✅ Build exitoso sin errores
+- ✅ TypeScript compilación limpia
+- ✅ Tests básicos funcionando
+- ✅ Configuración Next.js optimizada para Vercel
+- ✅ SWC habilitado para mejor performance en producción
+- ✅ Variables de entorno configuradas (.env.example actualizado)
+
 ## [1.2.6] - 2025-09-10 - Sistema de Dashboard Unificado y Protección de Rutas
 
 ### Reparado

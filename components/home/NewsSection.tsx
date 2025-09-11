@@ -61,48 +61,48 @@ export default function NewsSection() {
 
   // Noticias y promociones - Estructura editable fácilmente
   // En el futuro se puede conectar a Firestore para gestión dinámica
-  const newsItems = [{}]
-  //   {
-  //     id: 1,
-  //     type: 'promocion',
-  //     title: 'Gran Promoción de Herramientas Eléctricas',
-  //     description: 'Hasta 30% de descuento en herramientas DeWalt, Makita y Bosch. Válido hasta fin de mes en todas nuestras sucursales.',
-  //     imageUrl: '/images/promo-herramientas.jpg', // Placeholder
-  //     date: '2024-01-15',
-  //     featured: true,
-  //     link: '/promociones/herramientas-electricas'
-  //   },
-  //   {
-  //     id: 2,
-  //     type: 'noticia',
-  //     title: 'Nueva Sucursal en León, Guanajuato',
-  //     description: 'Nos complace anunciar la apertura de nuestra quinta sucursal, ahora también en León, Guanajuato, para estar más cerca de ti.',
-  //     imageUrl: '/images/sucursal-leon.jpg', // Placeholder
-  //     date: '2024-01-10',
-  //     featured: false,
-  //     link: '/noticias/nueva-sucursal-leon'
-  //   },
-  //   {
-  //     id: 3,
-  //     type: 'promocion',
-  //     title: 'Descuentos Especiales para Constructores',
-  //     description: 'Precios preferenciales en compras mayoristas. Cotiza tu proyecto y obtén los mejores precios del mercado.',
-  //     imageUrl: '/images/promo-constructores.jpg', // Placeholder
-  //     date: '2024-01-08',
-  //     featured: false,
-  //     link: '/contacto'
-  //   },
-  //   {
-  //     id: 4,
-  //     type: 'noticia',
-  //     title: 'Nuevas Marcas en Nuestro Catálogo',
-  //     description: 'Incorporamos nuevas marcas de prestigio internacional para ofrecerte mayor variedad y calidad en todos nuestros productos.',
-  //     imageUrl: '/images/nuevas-marcas.jpg', // Placeholder
-  //     date: '2024-01-05',
-  //     featured: false,
-  //     link: '/noticias/nuevas-marcas'
-  //   }
-  // ]
+  const newsItems = [
+    {
+      id: 1,
+      type: 'promocion',
+      title: 'Gran Promoción de Herramientas Eléctricas',
+      description: 'Hasta 30% de descuento en herramientas DeWalt, Makita y Bosch. Válido hasta fin de mes en todas nuestras sucursales.',
+      imageUrl: '/images/promo-herramientas.jpg', // Placeholder
+      date: '2024-01-15',
+      featured: true,
+      link: '/promociones/herramientas-electricas'
+    },
+    {
+      id: 2,
+      type: 'noticia',
+      title: 'Nueva Sucursal en León, Guanajuato',
+      description: 'Nos complace anunciar la apertura de nuestra quinta sucursal, ahora también en León, Guanajuato, para estar más cerca de ti.',
+      imageUrl: '/images/sucursal-leon.jpg', // Placeholder
+      date: '2024-01-10',
+      featured: false,
+      link: '/noticias/nueva-sucursal-leon'
+    },
+    {
+      id: 3,
+      type: 'promocion',
+      title: 'Descuentos Especiales para Constructores',
+      description: 'Precios preferenciales en compras mayoristas. Cotiza tu proyecto y obtén los mejores precios del mercado.',
+      imageUrl: '/images/promo-constructores.jpg', // Placeholder
+      date: '2024-01-08',
+      featured: false,
+      link: '/contacto'
+    },
+    {
+      id: 4,
+      type: 'noticia',
+      title: 'Nuevas Marcas en Nuestro Catálogo',
+      description: 'Incorporamos nuevas marcas de prestigio internacional para ofrecerte mayor variedad y calidad en todos nuestros productos.',
+      imageUrl: '/images/nuevas-marcas.jpg', // Placeholder
+      date: '2024-01-05',
+      featured: false,
+      link: '/noticias/nuevas-marcas'
+    }
+  ]
 
   const getTypeIcon = (type: string) => {
     switch (type) {

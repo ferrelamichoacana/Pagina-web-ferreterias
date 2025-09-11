@@ -155,7 +155,7 @@ describe('useFileManager', () => {
 
   it('filters files correctly in fetchFiles', async () => {
     const mockUnsubscribe = jest.fn()
-    mockFirestore.onSnapshot.mockImplementationOnce((query, callback) => {
+    mockFirestore.onSnapshot.mockImplementationOnce((query: any, callback: any) => {
       // Simular datos de Firestore
       const mockSnapshot = {
         docs: [
@@ -231,7 +231,7 @@ describe('useFileManager', () => {
         await result.current.saveFileRecord(fileData)
       } catch (error) {
         expect(error).toBeInstanceOf(Error)
-        expect(error.message).toContain('Error al guardar el registro del archivo')
+        expect((error as Error).message).toContain('Error al guardar el registro del archivo')
       }
     })
   })
