@@ -28,7 +28,7 @@ describe('FileUploader', () => {
     )
     
     expect(screen.getByText('Máximo 3 archivos, 5MB cada uno')).toBeInTheDocument()
-    expect(screen.getByText('image/*, application/pdf')).toBeInTheDocument()
+    expect(screen.getByText(/image\/\*, application\/pdf/)).toBeInTheDocument()
   })
 
   it('validates file size correctly', async () => {
@@ -40,7 +40,7 @@ describe('FileUploader', () => {
       type: 'application/pdf' 
     })
     
-    const input = screen.getByRole('textbox', { hidden: true }) as HTMLInputElement
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement
     
     Object.defineProperty(input, 'files', {
       value: [largeFile],
@@ -69,7 +69,7 @@ describe('FileUploader', () => {
       type: 'text/plain' 
     })
     
-    const input = screen.getByRole('textbox', { hidden: true }) as HTMLInputElement
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement
     
     Object.defineProperty(input, 'files', {
       value: [textFile],
@@ -95,7 +95,7 @@ describe('FileUploader', () => {
       new File(['3'], 'file3.pdf', { type: 'application/pdf' })
     ]
     
-    const input = screen.getByRole('textbox', { hidden: true }) as HTMLInputElement
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement
     
     Object.defineProperty(input, 'files', {
       value: files,
@@ -112,12 +112,13 @@ describe('FileUploader', () => {
   it('handles successful file upload', async () => {
     const onFilesUploaded = jest.fn()
     
-    // Mock successful Cloudinary response
+    // Mock successful API upload response
     ;(global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => ({
-        secure_url: 'https://cloudinary.com/test.pdf',
-        public_id: 'test_id'
+        success: true,
+        url: 'https://cloudinary.com/test.pdf',
+        publicId: 'test_id'
       })
     })
     
@@ -127,7 +128,7 @@ describe('FileUploader', () => {
       type: 'application/pdf' 
     })
     
-    const input = screen.getByRole('textbox', { hidden: true }) as HTMLInputElement
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement
     
     Object.defineProperty(input, 'files', {
       value: [validFile],
@@ -162,7 +163,7 @@ describe('FileUploader', () => {
       type: 'application/pdf' 
     })
     
-    const input = screen.getByRole('textbox', { hidden: true }) as HTMLInputElement
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement
     
     Object.defineProperty(input, 'files', {
       value: [validFile],
@@ -197,7 +198,7 @@ describe('FileUploader', () => {
       type: 'application/pdf' 
     })
     
-    const input = screen.getByRole('textbox', { hidden: true }) as HTMLInputElement
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement
     
     Object.defineProperty(input, 'files', {
       value: [validFile],

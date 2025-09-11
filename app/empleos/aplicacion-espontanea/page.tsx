@@ -4,6 +4,9 @@ import JobApplicationForm from '@/components/jobs/JobApplicationForm'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 
+// Forzar renderizado dinámico para evitar problemas con event handlers
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Aplicación Espontánea - Ferretería La Michoacana',
   description: 'Envía tu currículum para futuras oportunidades laborales',
@@ -84,7 +87,9 @@ export default function SpontaneousApplicationPage() {
           <JobApplicationForm 
             jobId={spontaneousJobData.id}
             jobTitle={spontaneousJobData.title}
-            jobData={spontaneousJobData}
+            branchName={spontaneousJobData.branchName}
+            onSubmit={(data) => console.log('Submitting spontaneous application:', data)}
+            onCancel={() => window.history.back()}
           />
         </div>
       </main>

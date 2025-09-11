@@ -1,40 +1,53 @@
+# ========================================
+# GITIGNORE - FERRETERÍA LA MICHOACANA
+# ========================================
+# CONFIGURACIÓN COMPLETA PARA EVITAR SUBIR ARCHIVOS SENSIBLES
+
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
+# DEPENDENCIAS
 /node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
 
-# testing
+# TESTING
 /coverage
+.nyc_output/
+.jest/
 
-# next.js
+# NEXT.JS
 /.next/
 /out/
+.swc/
 
-# production
+# PRODUCTION
 /build
 
-# misc
+# MISC
 .DS_Store
 *.pem
 
-# debug
+# DEBUG
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
+# ⚠️ VARIABLES DE ENTORNO - CRÍTICO: NO SUBIR SECRETS
 .env*.local
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# vercel
+# VERCEL
 .vercel
 
-# typescript
+# TYPESCRIPT
 *.tsbuildinfo
 next-env.d.ts
+tsconfig.tsbuildinfo
 
 # IDE
 .vscode/
@@ -45,23 +58,21 @@ next-env.d.ts
 # OS
 Thumbs.db
 
-# Firebase and sensitive files
+# ⚠️ FIREBASE - CRÍTICO: NO SUBIR CREDENCIALES
 .firebase/
 firebase-debug.log
 firestore-debug.log
 **/firebase-adminsdk-*.json
 **/*-firebase-adminsdk-*.json
+website-ferreteria-firebase-adminsdk-*.json
 .firebaserc
 
-# API Keys and secrets
+# API Keys and secrets - CRÍTICO: NO SUBIR CREDENCIALES
 /config/keys.js
 /config/prod.js
 *.key
 *.crt
 *.p12
-.env.development.local
-.env.test.local
-.env.production.local
 
 # Logs
 logs
@@ -75,15 +86,27 @@ pids
 
 # Coverage directory used by tools like istanbul
 coverage/
+.nyc_output/
 
-# Dependency directories
+# Jest
+coverage/
+.jest/
+
+# ESLint cache
+.eslintcache
+
+# Prettier cache
+.prettierrc.cache
+
+# Dependency directories and package managers
 node_modules/
+.npm
+.yarn-integrity
+package-lock.json.bak
+yarn.lock.bak
 
 # Optional npm cache directory
 .npm
-
-# Optional eslint cache
-.eslintcache
 
 # Microbundle cache
 .rpt2_cache/
@@ -97,19 +120,21 @@ node_modules/
 # Output of 'npm pack'
 *.tgz
 
-# Yarn Integrity file
-.yarn-integrity
-
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
 
 # Next.js build output
 .next
+out/
 
 # Nuxt.js build / generate output
 .nuxt
 dist
+
+# Gatsby files
+.cache/
+public
 
 # Storybook build outputs
 .out
@@ -118,3 +143,32 @@ dist
 # Temporary folders
 tmp/
 temp/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# Editor backups
+*.bak
+*.tmp
+*.temp
+
+# Development files
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+*.code-workspace
+
+# Cloudinary cache
+.cloudinary/
+
+# Environment-specific config files
+config.local.js
+config.local.ts

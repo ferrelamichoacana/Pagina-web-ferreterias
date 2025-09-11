@@ -1,5 +1,62 @@
 import '@testing-library/jest-dom'
 
+// Mock de Web APIs que Next.js usa
+global.TextEncoder = class TextEncoder {
+  encode(string) {
+    return new Uint8Array(Buffer.from(string, 'utf8'))
+  }
+}
+
+global.TextDecoder = class TextDecoder {
+  decode(buffer) {
+    return Buffer.from(buffer).toString('utf8')
+  }
+}
+
+global.Request = class Request {
+  constructor(input, init) {
+    this.url = input
+    this.method = init?.method || 'GET'
+    this.headers = new Map(Object.entries(init?.headers || {}))
+    this.body = init?.body
+  }
+  
+  async json() {
+    return JSON.parse(this.body || '{}')
+  }
+  
+  async text() {
+    return this.body || ''
+  }
+}
+
+global.Response = class Response {
+  constructor(body, init) {
+    this.body = body
+    this.status = init?.status || 200
+    this.statusText = init?.statusText || 'OK'
+    this.headers = new Map(Object.entries(init?.headers || {}))
+  }
+  
+  async json() {
+    return JSON.parse(this.body || '{}')
+  }
+  
+  async text() {
+    return this.body || ''
+  }
+  
+  static json(data, init) {
+    return new Response(JSON.stringify(data), {
+      ...init,
+      headers: {
+        'Content-Type': 'application/json',
+        ...init?.headers
+      }
+    })
+  }
+}
+
 // Mock Next.js router
 jest.mock('next/router', () => ({
   useRouter() {
