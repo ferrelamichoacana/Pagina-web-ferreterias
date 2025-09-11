@@ -63,26 +63,66 @@ export function useBrands() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    console.log('🔄 Iniciando useBrands hook')
+    console.log('🔥 Firebase db:', db ? 'Configurado' : 'No configurado')
+    
+    if (!db) {
+      console.error('❌ Firebase db no configurado')
+      setError('Firebase no está configurado')
+      setLoading(false)
+      return
+    }
+
     const unsubscribe = onSnapshot(
-      query(collection(db, 'brands'), where('active', '==', true), orderBy('name')),
+      collection(db, 'brands'), // Query simple sin orderBy para evitar el índice compuesto
       (snapshot) => {
-        const brandsData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Brand[]
+        console.log('📥 Snapshot recibido:', {
+          size: snapshot.size,
+          empty: snapshot.empty,
+          docs: snapshot.docs.length
+        })
         
+        const brandsData = snapshot.docs.map(doc => {
+          const data = doc.data()
+          console.log('📄 Documento:', { id: doc.id, data })
+          return {
+            id: doc.id,
+            ...data,
+          }
+        }) as Brand[]
+        
+        // Ordenar en el cliente para evitar problemas de índice
+        brandsData.sort((a, b) => a.name.localeCompare(b.name))
+        
+        console.log('✅ Marcas procesadas y ordenadas:', brandsData)
         setBrands(brandsData)
         setLoading(false)
+        setError(null)
       },
       (err) => {
-        console.error('Error fetching brands:', err)
-        setError('Error al cargar marcas')
+        console.error('💥 Error fetching brands:', err)
+        console.error('🔍 Error details:', {
+          code: err.code,
+          message: err.message,
+          stack: err.stack
+        })
+        setError(`Error al cargar marcas: ${err.message}`)
         setLoading(false)
       }
     )
 
-    return () => unsubscribe()
+    return () => {
+      console.log('🧹 Limpiando useBrands subscription')
+      unsubscribe()
+    }
   }, [])
+
+  console.log('📊 useBrands estado actual:', {
+    brandsCount: brands.length,
+    loading,
+    error,
+    brands: brands.slice(0, 2) // Solo mostrar las primeras 2 para debug
+  })
 
   return { brands, loading, error }
 }

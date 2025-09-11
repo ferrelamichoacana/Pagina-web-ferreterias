@@ -10,6 +10,7 @@ import SystemConfigManager from './SystemConfigManager'
 import UsersManager from './UsersManager'
 import FileManagementPage from './FileManagementPage'
 import FirebaseDebugger from './FirebaseDebugger'
+import FirebaseSetup from './FirebaseSetup'
 import { 
   BuildingStorefrontIcon,
   TagIcon,
@@ -17,7 +18,8 @@ import {
   UsersIcon,
   ChartBarIcon,
   DocumentTextIcon,
-  WrenchScrewdriverIcon
+  WrenchScrewdriverIcon,
+  FireIcon
 } from '@heroicons/react/24/outline'
 
 export default function AdminDashboard() {
@@ -85,6 +87,12 @@ export default function AdminDashboard() {
       name: 'Firebase Debug',
       icon: WrenchScrewdriverIcon,
       description: 'Depurar colecciones de Firebase'
+    },
+    {
+      id: 'firebase-setup',
+      name: 'Configurar Firebase',
+      icon: FireIcon,
+      description: 'Configurar variables de entorno de Firebase'
     }
   ]
 
@@ -106,6 +114,8 @@ export default function AdminDashboard() {
         return <FileManagementPage />
       case 'debug':
         return <FirebaseDebugger />
+      case 'firebase-setup':
+        return <FirebaseSetup />
       default:
         return <AdminOverview />
     }

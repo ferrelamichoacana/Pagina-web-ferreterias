@@ -52,12 +52,22 @@ try {
       console.log('🔥 Firebase initialized successfully')
       console.log('📋 Project ID:', firebaseConfig.projectId)
       console.log('🔑 API Key (obfuscated):', obfuscateApiKey(firebaseConfig.apiKey))
+      console.log('🗄️ Firestore DB:', db ? 'Inicializada' : 'Error')
+      console.log('🔐 Auth:', auth ? 'Inicializada' : 'Error')
     }
   } else {
     console.warn('⚠️ Firebase: Using dummy configuration for build process')
     console.warn('   - Valid env vars:', hasValidEnvVars)
     console.warn('   - Valid config:', hasValidConfig)
     console.warn('   - Secure domain:', isSecureDomain)
+    
+    // Mostrar más detalles en desarrollo
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 Debugging Firebase config:')
+      console.log('   - API Key presente:', !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY)
+      console.log('   - Project ID:', process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID)
+      console.log('   - Auth Domain:', process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN)
+    }
     
     // Para el proceso de build, crear instancias dummy
     if (typeof window === 'undefined') {

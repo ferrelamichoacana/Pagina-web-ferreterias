@@ -65,7 +65,10 @@ export async function GET(request: NextRequest) {
 // POST - Crear nueva marca
 export async function POST(request: NextRequest) {
   try {
+    console.log('🚀 API POST /api/brands iniciado')
+    
     if (!db) {
+      console.error('❌ Firebase no configurado')
       return NextResponse.json(
         { success: false, error: 'Firebase no está configurado' },
         { status: 503 }
@@ -73,13 +76,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
+    console.log('📥 Datos recibidos:', body)
 
     // Validar campos requeridos
     const requiredFields = ['name', 'category']
     for (const field of requiredFields) {
       if (!body[field] || body[field].toString().trim() === '') {
+        const errorMsg = `El campo ${field} es requerido`
+        console.error('❌ Validación fallida:', errorMsg)
         return NextResponse.json(
-          { success: false, error: `El campo ${field} es requerido` },
+          { success: false, error: errorMsg },
           { status: 400 }
         )
       }
@@ -87,37 +93,53 @@ export async function POST(request: NextRequest) {
 
     // Validar URL del logo si se proporciona
     if (body.logo && !body.logo.startsWith('/') && !body.logo.startsWith('http')) {
+      const errorMsg = 'URL del logo inválida'
+      console.error('❌ Logo inválido:', body.logo)
       return NextResponse.json(
-        { success: false, error: 'URL del logo inválida' },
+        { success: false, error: errorMsg },
         { status: 400 }
       )
     }
 
-    // Validar URL del sitio web si se proporciona
-    if (body.website && !body.website.startsWith('http')) {
-      return NextResponse.json(
-        { success: false, error: 'URL del sitio web debe comenzar con http:// o https://' },
-        { status: 400 }
-      )
+    // Mejorar validación y normalización del sitio web
+    let website = null
+    if (body.website && body.website.trim() !== '') {
+      const websiteValue = body.website.trim()
+      
+      // Si no tiene protocolo, agregar https://
+      if (!websiteValue.startsWith('http://') && !websiteValue.startsWith('https://')) {
+        website = `https://${websiteValue}`
+      } else {
+        website = websiteValue
+      }
+      
+      console.log('🌐 Website procesado:', {
+        original: body.website,
+        processed: website
+      })
     }
 
     // Preparar datos para Firestore
     const brandData = {
       customId: body.customId || `brand_${Date.now()}`,
       name: body.name.trim(),
-      logo: body.logo?.trim() || '',
+      logoUrl: body.logo?.trim() || '',
       category: body.category.trim(),
       featured: Boolean(body.featured),
-      active: true,
+      active: Boolean(body.active !== undefined ? body.active : true),
       description: body.description?.trim() || '',
-      website: body.website?.trim() || '',
+      website: website || '',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     }
 
+    console.log('💾 Guardando en Firestore:', brandData)
+
     // Guardar en Firestore
     const brandsRef = collection(db, 'brands')
     const docRef = await addDoc(brandsRef, brandData)
+
+    console.log('✅ Marca creada con ID:', docRef.id)
 
     return NextResponse.json({
       success: true,
@@ -129,9 +151,9 @@ export async function POST(request: NextRequest) {
     }, { status: 201 })
 
   } catch (error) {
-    console.error('Error creating brand:', error)
+    console.error('💥 Error creating brand:', error)
     return NextResponse.json(
-      { success: false, error: 'Error al crear marca' },
+      { success: false, error: 'Error al crear marca: ' + (error instanceof Error ? error.message : 'Error desconocido') },
       { status: 500 }
     )
   }
@@ -140,7 +162,10 @@ export async function POST(request: NextRequest) {
 // PUT - Actualizar marca
 export async function PUT(request: NextRequest) {
   try {
+    console.log('🔄 API PUT /api/brands iniciado')
+    
     if (!db) {
+      console.error('❌ Firebase no configurado')
       return NextResponse.json(
         { success: false, error: 'Firebase no está configurado' },
         { status: 503 }
@@ -148,9 +173,12 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
+    console.log('📥 Datos de actualización recibidos:', body)
+    
     const { id, ...updateData } = body
 
     if (!id) {
+      console.error('❌ ID faltante')
       return NextResponse.json(
         { success: false, error: 'ID de marca requerido' },
         { status: 400 }
@@ -159,34 +187,59 @@ export async function PUT(request: NextRequest) {
 
     // Validar URL del logo si se proporciona
     if (updateData.logo && !updateData.logo.startsWith('/') && !updateData.logo.startsWith('http')) {
+      const errorMsg = 'URL del logo inválida'
+      console.error('❌ Logo inválido:', updateData.logo)
       return NextResponse.json(
-        { success: false, error: 'URL del logo inválida' },
+        { success: false, error: errorMsg },
         { status: 400 }
       )
     }
 
-    // Validar URL del sitio web si se proporciona
-    if (updateData.website && updateData.website.trim() && !updateData.website.startsWith('http')) {
-      return NextResponse.json(
-        { success: false, error: 'URL del sitio web debe comenzar con http:// o https://' },
-        { status: 400 }
-      )
+    // Mejorar validación y normalización del sitio web
+    if (updateData.website !== undefined) {
+      if (updateData.website && updateData.website.trim() !== '') {
+        const websiteValue = updateData.website.trim()
+        
+        // Si no tiene protocolo, agregar https://
+        if (!websiteValue.startsWith('http://') && !websiteValue.startsWith('https://')) {
+          updateData.website = `https://${websiteValue}`
+        } else {
+          updateData.website = websiteValue
+        }
+        
+        console.log('🌐 Website actualizado procesado:', {
+          original: body.website,
+          processed: updateData.website
+        })
+      } else {
+        updateData.website = ''
+      }
     }
 
     // Limpiar campos de texto
-    const textFields = ['name', 'logo', 'category', 'description', 'website']
+    const textFields = ['name', 'category', 'description']
     textFields.forEach(field => {
       if (updateData[field]) {
         updateData[field] = updateData[field].trim()
       }
     })
 
+    // Mapear logo a logoUrl para consistencia
+    if (updateData.logo !== undefined) {
+      updateData.logoUrl = updateData.logo
+      delete updateData.logo
+    }
+
     // Actualizar timestamp
     updateData.updatedAt = serverTimestamp()
+
+    console.log('💾 Actualizando en Firestore:', { id, updateData })
 
     // Actualizar en Firestore
     const brandRef = doc(db, 'brands', id)
     await updateDoc(brandRef, updateData)
+
+    console.log('✅ Marca actualizada exitosamente')
 
     return NextResponse.json({
       success: true,
@@ -194,9 +247,9 @@ export async function PUT(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error updating brand:', error)
+    console.error('💥 Error updating brand:', error)
     return NextResponse.json(
-      { success: false, error: 'Error al actualizar marca' },
+      { success: false, error: 'Error al actualizar marca: ' + (error instanceof Error ? error.message : 'Error desconocido') },
       { status: 500 }
     )
   }

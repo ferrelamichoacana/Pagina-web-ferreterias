@@ -3,6 +3,8 @@
 import React, { useState, useCallback } from 'react'
 import { useBrands } from '@/lib/hooks/useFirebaseData'
 import { uploadWithPreset } from '@/lib/utils/cloudinary'
+import FirebaseConnectionTest from './FirebaseConnectionTest'
+import FirebaseStatusIndicator from './FirebaseStatusIndicator'
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -17,30 +19,17 @@ import type { Brand } from '@/types'
 export default function BrandsManager() {
   const { brands, loading, error } = useBrands()
   
-  // Datos mock como fallback
-  const mockBrands = [
-    {
-      id: '1',
-      name: 'CEMEX',
-      logoUrl: '/images/brands/cemex.png',
-      category: 'Cemento',
-      description: 'Líder mundial en materiales de construcción',
-      website: 'https://cemex.com',
-      active: true
-    },
-    {
-      id: '2', 
-      name: 'DeWalt',
-      logoUrl: '/images/brands/dewalt.png',
-      category: 'Herramientas',
-      description: 'Herramientas profesionales de alta calidad',
-      website: 'https://dewalt.com',
-      active: true
-    }
-  ]
+  // Debug: Log para entender el estado de Firebase
+  console.log('🔍 BrandsManager Debug:', {
+    brands,
+    brandsCount: brands?.length || 0,
+    loading,
+    error,
+    timestamp: new Date().toISOString()
+  })
   
-  // Usar datos mock si hay error o no hay datos
-  const displayBrands = error || !brands?.length ? mockBrands : brands
+  // Usar solo datos de Firebase, sin fallback mock
+  const displayBrands = brands || []
   const [showForm, setShowForm] = useState(false)
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -161,15 +150,51 @@ export default function BrandsManager() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    console.log('🚀 Iniciando submit:', {
+      formData,
+      editingBrand: editingBrand?.id,
+      timestamp: new Date().toISOString()
+    })
+    
     if (!formData.name || !formData.category) {
-      alert('Por favor completa los campos requeridos')
+      const errorMsg = 'Por favor completa los campos requeridos'
+      console.error('❌ Validación fallida:', errorMsg)
+      alert(errorMsg)
       return
+    }
+
+    // Validación de website mejorada - permitir vacío o URL válida
+    if (formData.website && formData.website.trim() !== '') {
+      const websiteValue = formData.website.trim()
+      // Si no empieza con http, agregarlo automáticamente
+      const finalWebsite = websiteValue.startsWith('http') 
+        ? websiteValue 
+        : `https://${websiteValue}`
+      
+      console.log('🌐 Procesando website:', {
+        original: formData.website,
+        processed: finalWebsite
+      })
+      
+      setFormData(prev => ({ ...prev, website: finalWebsite }))
     }
 
     setIsSubmitting(true)
 
     try {
+      const requestData = {
+        name: formData.name,
+        logo: formData.logoUrl,
+        category: formData.category,
+        description: formData.description,
+        website: formData.website.trim() || null, // Enviar null si está vacío
+        active: formData.active
+      }
+
+      console.log('📤 Datos a enviar:', requestData)
+
       if (editingBrand) {
+        console.log('✏️ Actualizando marca existente:', editingBrand.id)
         // Actualizar marca existente usando API
         const response = await fetch('/api/brands', {
           method: 'PUT',
@@ -178,50 +203,63 @@ export default function BrandsManager() {
           },
           body: JSON.stringify({
             id: editingBrand.id,
-            name: formData.name,
-            logo: formData.logoUrl,
-            category: formData.category,
-            description: formData.description,
-            website: formData.website,
-            active: formData.active
+            ...requestData
           })
         })
 
+        console.log('📥 Respuesta PUT:', {
+          status: response.status,
+          ok: response.ok,
+          statusText: response.statusText
+        })
+
         if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.error || 'Error al actualizar marca')
+          const errorData = await response.json()
+          console.error('❌ Error en PUT:', errorData)
+          throw new Error(errorData.error || 'Error al actualizar marca')
         }
+
+        const responseData = await response.json()
+        console.log('✅ Marca actualizada:', responseData)
       } else {
+        console.log('➕ Creando nueva marca')
         // Crear nueva marca usando API
         const response = await fetch('/api/brands', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            name: formData.name,
-            logo: formData.logoUrl,
-            category: formData.category,
-            description: formData.description,
-            website: formData.website,
-            active: formData.active
-          })
+          body: JSON.stringify(requestData)
+        })
+
+        console.log('📥 Respuesta POST:', {
+          status: response.status,
+          ok: response.ok,
+          statusText: response.statusText
         })
 
         if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.error || 'Error al crear marca')
+          const errorData = await response.json()
+          console.error('❌ Error en POST:', errorData)
+          throw new Error(errorData.error || 'Error al crear marca')
         }
+
+        const responseData = await response.json()
+        console.log('✅ Marca creada:', responseData)
       }
       
+      console.log('🔄 Reiniciando formulario y recargando datos...')
       resetForm()
       // Refresh data
       window.location.reload()
     } catch (error) {
-      console.error('Error saving brand:', error)
-      alert(`Error al guardar la marca: ${error instanceof Error ? error.message : 'Error desconocido'}`)
+      console.error('💥 Error completo:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+      console.error('📝 Mensaje de error:', errorMessage)
+      alert(`Error al guardar la marca: ${errorMessage}`)
     } finally {
       setIsSubmitting(false)
+      console.log('🏁 Submit finalizado')
     }
   }
 
@@ -318,9 +356,39 @@ export default function BrandsManager() {
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-          <p className="text-red-800">Error: {error}</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-red-800 font-medium">Error de Firebase:</p>
+              <p className="text-red-700 text-sm">{error}</p>
+            </div>
+            <button
+              onClick={() => window.location.reload()}
+              className="btn-secondary text-xs"
+            >
+              Recargar
+            </button>
+          </div>
         </div>
       )}
+
+      {/* Debug info para desarrollo */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <p className="text-blue-800 font-medium mb-2">🔍 Debug Info:</p>
+          <div className="text-blue-700 text-sm space-y-1">
+            <p>• Brands cargadas: {displayBrands.length}</p>
+            <p>• Loading: {loading ? 'Sí' : 'No'}</p>
+            <p>• Error: {error || 'Ninguno'}</p>
+            <p>• Timestamp: {new Date().toLocaleString()}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Estado de Firebase */}
+      <FirebaseStatusIndicator />
+
+      {/* Test de conexión Firebase */}
+      <FirebaseConnectionTest />
 
       {/* Formulario */}
       {showForm && (
@@ -458,13 +526,16 @@ export default function BrandsManager() {
                   Sitio Web
                 </label>
                 <input
-                  type="url"
+                  type="text"
                   name="website"
                   value={formData.website}
                   onChange={handleInputChange}
                   className="input-field"
-                  placeholder="https://www.marca.com"
+                  placeholder="Ej: www.marca.com o https://www.marca.com"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Opcional. Puedes escribir solo el dominio (ej: marca.com) o la URL completa
+                </p>
               </div>
 
               <div className="flex items-center">
