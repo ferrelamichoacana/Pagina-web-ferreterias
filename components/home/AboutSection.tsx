@@ -42,7 +42,7 @@ export default function AboutSection() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-            {config?.content?.aboutTitle || t.home.aboutTitle}
+            {t.home.aboutTitle}
           </h2>
           
           {/* Texto dinámico desde Firebase o fallback a traducción */}
@@ -55,7 +55,7 @@ export default function AboutSection() {
               </div>
             ) : (
               <p className="text-lg text-gray-600 leading-relaxed">
-                {config?.content?.aboutDescription || t.home.aboutText}
+                {t.home.aboutText}
               </p>
             )}
           </div>

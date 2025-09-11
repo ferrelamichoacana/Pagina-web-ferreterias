@@ -48,52 +48,52 @@ export default function TicketManager() {
   const [statusFilter, setStatusFilter] = useState<string>('todos')
   const [priorityFilter, setPriorityFilter] = useState<string>('todas')
 
-  // Mock data para desarrollo
-  const mockTickets: ITTicket[] = [
-    {
-      id: '1',
-      ticketNumber: 'IT-2025-001',
-      title: 'Computadora no enciende en caja 2',
-      description: 'La computadora de la caja 2 no enciende desde esta mañana. Se escucha un pitido cuando se presiona el botón de encendido.',
-      category: 'hardware',
-      priority: 'alta',
-      status: 'abierto',
-      branchId: 'morelia-centro',
-      branchName: 'Morelia Centro',
-      createdBy: 'user123',
-      creatorName: 'María González',
-      rustdeskCode: '123456789',
-      rustdeskPassword: 'temp123',
-      availableSchedule: 'Lunes a Viernes 9:00-17:00',
-      createdAt: new Date('2025-01-10T09:30:00'),
-      updatedAt: new Date('2025-01-10T09:30:00')
-    },
-    {
-      id: '2',
-      ticketNumber: 'IT-2025-002',
-      title: 'Sistema de inventario lento',
-      description: 'El sistema de inventario está muy lento, tarda mucho en cargar los productos y hacer consultas.',
-      category: 'software',
-      priority: 'media',
-      status: 'en_proceso',
-      branchId: 'uruapan',
-      branchName: 'Uruapan',
-      createdBy: 'user456',
-      creatorName: 'Carlos Ramírez',
-      assignedTo: user?.uid,
-      assignedToName: user?.displayName || 'Técnico IT',
-      createdAt: new Date('2025-01-09T14:15:00'),
-      updatedAt: new Date('2025-01-10T08:45:00')
-    }
-  ]
-
   useEffect(() => {
+    // Mock data para desarrollo
+    const mockTickets: ITTicket[] = [
+      {
+        id: '1',
+        ticketNumber: 'IT-2025-001',
+        title: 'Computadora no enciende en caja 2',
+        description: 'La computadora de la caja 2 no enciende desde esta mañana. Se escucha un pitido cuando se presiona el botón de encendido.',
+        category: 'hardware',
+        priority: 'alta',
+        status: 'abierto',
+        branchId: 'morelia-centro',
+        branchName: 'Morelia Centro',
+        createdBy: 'user123',
+        creatorName: 'María González',
+        rustdeskCode: '123456789',
+        rustdeskPassword: 'temp123',
+        availableSchedule: 'Lunes a Viernes 9:00-17:00',
+        createdAt: new Date('2025-01-10T09:30:00'),
+        updatedAt: new Date('2025-01-10T09:30:00')
+      },
+      {
+        id: '2',
+        ticketNumber: 'IT-2025-002',
+        title: 'Sistema de inventario lento',
+        description: 'El sistema de inventario está muy lento, tarda mucho en cargar los productos y hacer consultas.',
+        category: 'software',
+        priority: 'media',
+        status: 'en_proceso',
+        branchId: 'uruapan',
+        branchName: 'Uruapan',
+        createdBy: 'user456',
+        creatorName: 'Carlos Ramírez',
+        assignedTo: user?.uid,
+        assignedToName: user?.displayName || 'Técnico IT',
+        createdAt: new Date('2025-01-09T14:15:00'),
+        updatedAt: new Date('2025-01-10T08:45:00')
+      }
+    ]
+
     // Simular carga de datos
     setTimeout(() => {
       setTickets(mockTickets)
       setLoading(false)
     }, 1000)
-  }, [])
+  }, [user?.uid, user?.displayName])
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {

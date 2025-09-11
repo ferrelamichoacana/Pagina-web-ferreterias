@@ -67,7 +67,7 @@ export default function FileUploader({
   const getFileIcon = (category: string, type: string) => {
     switch (category) {
       case 'image':
-        return <Image className="w-8 h-8 text-blue-500" />
+        return <Image className="w-8 h-8 text-blue-500" aria-label="Archivo de imagen" />
       case 'document':
         if (type.includes('pdf')) return <FileText className="w-8 h-8 text-red-500" />
         return <FileText className="w-8 h-8 text-blue-500" />
@@ -86,7 +86,7 @@ export default function FileUploader({
   }
 
   // Función para validar archivos
-  const validateFile = (file: File): string | null => {
+  const validateFile = useCallback((file: File): string | null => {
     // Validar tamaño
     if (file.size > maxFileSize * 1024 * 1024) {
       return `El archivo ${file.name} excede el tamaño máximo de ${maxFileSize}MB`
@@ -105,10 +105,10 @@ export default function FileUploader({
     }
 
     return null
-  }
+  }, [maxFileSize, acceptedTypes])
 
   // Función para subir archivo usando nuestra API
-  const uploadToCloudinary = async (file: File): Promise<UploadedFile> => {
+  const uploadToCloudinary = useCallback(async (file: File): Promise<UploadedFile> => {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('folder', folder)
@@ -144,7 +144,7 @@ export default function FileUploader({
       console.error('Error uploading to Cloudinary:', error)
       throw new Error(`Error al subir ${file.name}`)
     }
-  }
+  }, [folder])
 
   // Función para manejar la selección de archivos
   const handleFiles = useCallback(async (selectedFiles: FileList) => {
@@ -182,7 +182,7 @@ export default function FileUploader({
     } finally {
       setUploading(false)
     }
-  }, [files, maxFiles, onError, onFilesUploaded])
+  }, [files, maxFiles, onError, onFilesUploaded, uploadToCloudinary, validateFile])
 
   // Función para remover archivo
   const removeFile = (fileId: string) => {

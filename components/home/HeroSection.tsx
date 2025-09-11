@@ -32,7 +32,7 @@ export default function HeroSection() {
             </div>
           ) : (
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
-              {config?.content?.heroTitle || t.home.title}
+              {config?.heroTitle || t.home.title}
             </h1>
           )}
           
@@ -44,7 +44,7 @@ export default function HeroSection() {
             </div>
           ) : (
             <p className="text-xl md:text-2xl text-white mb-8 max-w-3xl mx-auto drop-shadow-md">
-              {config?.content?.heroSubtitle || t.home.subtitle}
+              {config?.heroSubtitle || t.home.subtitle}
             </p>
           )}
           

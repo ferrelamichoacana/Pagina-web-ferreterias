@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { 
   PaperAirplaneIcon, 
@@ -46,18 +46,7 @@ export default function ChatWindow({ requestId, requestTitle, isOpen, onClose }:
     scrollToBottom()
   }, [messages])
 
-  // Cargar mensajes del chat
-  useEffect(() => {
-    if (isOpen && requestId) {
-      loadMessages()
-      
-      // Simular actualizaciones en tiempo real (en producción usar Firebase listeners)
-      const interval = setInterval(loadMessages, 5000)
-      return () => clearInterval(interval)
-    }
-  }, [isOpen, requestId])
-
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async () => {
     try {
       // Por ahora simulamos mensajes - en producción usar Firebase
       const mockMessages: ChatMessage[] = [
@@ -99,7 +88,18 @@ export default function ChatWindow({ requestId, requestTitle, isOpen, onClose }:
       console.error('Error loading messages:', error)
       setIsLoading(false)
     }
-  }
+  }, [requestId, user?.uid, user?.displayName])
+
+  // Cargar mensajes del chat
+  useEffect(() => {
+    if (isOpen && requestId) {
+      loadMessages()
+      
+      // Simular actualizaciones en tiempo real (en producción usar Firebase listeners)
+      const interval = setInterval(loadMessages, 5000)
+      return () => clearInterval(interval)
+    }
+  }, [isOpen, requestId, loadMessages])
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !user) return

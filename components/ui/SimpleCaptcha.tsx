@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
 
 interface SimpleCaptchaProps {
@@ -15,7 +15,7 @@ export default function SimpleCaptcha({ onVerify, className = '' }: SimpleCaptch
   const [isVerified, setIsVerified] = useState(false)
 
   // Generar nueva pregunta de captcha
-  const generateCaptcha = () => {
+  const generateCaptcha = useCallback(() => {
     const operations = [
       { type: 'sum', symbol: '+' },
       { type: 'subtract', symbol: '-' },
@@ -56,7 +56,7 @@ export default function SimpleCaptcha({ onVerify, className = '' }: SimpleCaptch
     setUserAnswer('')
     setIsVerified(false)
     onVerify(false)
-  }
+  }, [onVerify])
 
   // Verificar respuesta
   const handleAnswerChange = (value: string) => {
@@ -75,7 +75,7 @@ export default function SimpleCaptcha({ onVerify, className = '' }: SimpleCaptch
   // Generar captcha inicial
   useEffect(() => {
     generateCaptcha()
-  }, [])
+  }, [generateCaptcha])
 
   return (
     <div className={`space-y-3 ${className}`}>

@@ -85,7 +85,7 @@ export default function FileGallery({
     const iconClass = "w-8 h-8"
     switch (file.category) {
       case 'image':
-        return <Image className={`${iconClass} text-blue-500`} />
+        return <Image className={`${iconClass} text-blue-500`} aria-label="Archivo de imagen" />
       case 'document':
         if (file.type.includes('pdf')) {
           return <FileText className={`${iconClass} text-red-500`} />

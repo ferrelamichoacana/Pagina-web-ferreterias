@@ -138,7 +138,7 @@ export default function FileManagementPage() {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
-            <Image className="w-8 h-8 text-purple-500" />
+            <Image className="w-8 h-8 text-purple-500" aria-label="Icono de imágenes" />
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Imágenes</p>
               <p className="text-2xl font-bold text-gray-900">{stats.byCategory.image || 0}</p>
