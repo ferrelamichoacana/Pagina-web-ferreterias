@@ -6,6 +6,7 @@ import { uploadWithPreset } from '@/lib/utils/cloudinary'
 import FirebaseConnectionTest from './FirebaseConnectionTest'
 import FirebaseStatusIndicator from './FirebaseStatusIndicator'
 import VercelEnvTest from './VercelEnvTest'
+import FirebaseDebugConsole from './FirebaseDebugConsole'
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -384,6 +385,9 @@ export default function BrandsManager() {
           </div>
         </div>
       )}
+
+      {/* Console de debug completo */}
+      <FirebaseDebugConsole />
 
       {/* Test de variables de entorno de Vercel */}
       <VercelEnvTest />
