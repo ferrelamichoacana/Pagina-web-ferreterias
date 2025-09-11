@@ -5,7 +5,12 @@ import { AuthProvider } from '@/lib/auth/AuthProvider'
 import { LanguageProvider } from '@/lib/i18n/LanguageProvider'
 
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin'],
+  fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+  display: 'swap',
+  adjustFontFallback: false
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
@@ -55,6 +60,4 @@ export default function RootLayout({
           </AuthProvider>
         </LanguageProvider>
       </body>
-    </html>
-  )
-}
+    </html> 

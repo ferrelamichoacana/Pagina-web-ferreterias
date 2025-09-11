@@ -14,6 +14,14 @@ const nextConfig = {
   // Configuración de compresión
   compress: true,
 
+  // Configuración para optimizar fonts
+  optimizeFonts: true,
+  
+  // Configuración de experimental para mejorar fonts
+  experimental: {
+    optimizePackageImports: ['@next/font']
+  },
+
   // Configuración de headers básicos
   async headers() {
     return [
