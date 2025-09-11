@@ -60,4 +60,6 @@ export default function RootLayout({
           </AuthProvider>
         </LanguageProvider>
       </body>
-    </html> 
+    </html>
+  )
+}
