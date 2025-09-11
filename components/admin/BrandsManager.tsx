@@ -5,6 +5,7 @@ import { useBrands } from '@/lib/hooks/useFirebaseData'
 import { uploadWithPreset } from '@/lib/utils/cloudinary'
 import FirebaseConnectionTest from './FirebaseConnectionTest'
 import FirebaseStatusIndicator from './FirebaseStatusIndicator'
+import VercelEnvTest from './VercelEnvTest'
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -383,6 +384,9 @@ export default function BrandsManager() {
           </div>
         </div>
       )}
+
+      {/* Test de variables de entorno de Vercel */}
+      <VercelEnvTest />
 
       {/* Estado de Firebase */}
       <FirebaseStatusIndicator />

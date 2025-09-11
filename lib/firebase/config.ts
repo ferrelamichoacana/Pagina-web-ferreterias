@@ -14,10 +14,21 @@ function validateFirebaseEnvVars() {
     'NEXT_PUBLIC_FIREBASE_APP_ID'
   ]
 
-  const missing = requiredVars.filter(varName => !process.env[varName])
+  const missing = requiredVars.filter(varName => {
+    const value = process.env[varName]
+    return !value || value === 'dummy-api-key' || value === 'dummy-project' || value.startsWith('dummy-')
+  })
   
   if (missing.length > 0) {
-    console.warn('⚠️ Firebase: Missing environment variables:', missing.join(', '))
+    console.warn('⚠️ Firebase: Missing or dummy environment variables:', missing.join(', '))
+    console.log('📋 Current env vars:', {
+      apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? '✓ Set' : '✗ Missing',
+      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ? '✓ Set' : '✗ Missing',
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ? '✓ Set' : '✗ Missing',
+      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ? '✓ Set' : '✗ Missing',
+      messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ? '✓ Set' : '✗ Missing',
+      appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID ? '✓ Set' : '✗ Missing'
+    })
     return false
   }
   return true
@@ -43,7 +54,15 @@ try {
   const hasValidConfig = validateFirebaseConfig(firebaseConfig)
   const isSecureDomain = validateCurrentDomain()
   
-  if (hasValidEnvVars && hasValidConfig && isSecureDomain) {
+  console.log('🔍 Firebase initialization debug:', {
+    hasValidEnvVars,
+    hasValidConfig,
+    isSecureDomain,
+    environment: process.env.NODE_ENV,
+    isClient: typeof window !== 'undefined'
+  })
+  
+  if (hasValidEnvVars && hasValidConfig) {
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
     auth = getAuth(app)
     db = getFirestore(app)
@@ -56,30 +75,39 @@ try {
       console.log('🔐 Auth:', auth ? 'Inicializada' : 'Error')
     }
   } else {
-    console.warn('⚠️ Firebase: Using dummy configuration for build process')
+    console.warn('⚠️ Firebase: Configuration issues detected')
     console.warn('   - Valid env vars:', hasValidEnvVars)
     console.warn('   - Valid config:', hasValidConfig)
     console.warn('   - Secure domain:', isSecureDomain)
     
-    // Mostrar más detalles en desarrollo
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🔍 Debugging Firebase config:')
-      console.log('   - API Key presente:', !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY)
-      console.log('   - Project ID:', process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID)
-      console.log('   - Auth Domain:', process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN)
-    }
-    
-    // Para el proceso de build, crear instancias dummy
-    if (typeof window === 'undefined') {
-      // Estamos en el servidor durante el build
-      app = { options: firebaseConfig }
-      auth = null
-      db = null
-    } else {
-      // En el cliente, inicializar normalmente (aunque falle)
+    // Intentar inicializar de todas formas para Vercel
+    if (hasValidEnvVars && hasValidConfig) {
+      console.log('� Attempting Firebase initialization despite domain issues...')
       app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
       auth = getAuth(app)
       db = getFirestore(app)
+      console.log('✅ Firebase initialized for production environment')
+    } else {
+      // Para el proceso de build, crear instancias dummy
+      if (typeof window === 'undefined') {
+        // Estamos en el servidor durante el build
+        app = { options: firebaseConfig }
+        auth = null
+        db = null
+      } else {
+        // En el cliente, intentar inicializar normalmente
+        try {
+          app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
+          auth = getAuth(app)
+          db = getFirestore(app)
+          console.log('🔄 Firebase initialized with fallback method')
+        } catch (initError) {
+          console.error('❌ Firebase fallback initialization failed:', initError)
+          app = null
+          auth = null
+          db = null
+        }
+      }
     }
   }
 } catch (error) {

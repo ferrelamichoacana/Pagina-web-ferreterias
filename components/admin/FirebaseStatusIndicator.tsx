@@ -84,14 +84,37 @@ export default function FirebaseStatusIndicator() {
 
         {status.details.missingVars && status.details.missingVars.length > 0 && (
           <div className="mt-3 p-2 bg-red-100 rounded text-red-700 text-xs">
-            <p className="font-medium">Variables faltantes:</p>
+            <p className="font-medium">Variables faltantes o con valores dummy:</p>
             <ul className="mt-1 list-disc list-inside">
               {status.details.missingVars.map((varName: string) => (
                 <li key={varName}>{varName}</li>
               ))}
             </ul>
+            {status.details.vercelDeployment && (
+              <p className="mt-2 text-blue-700">
+                💡 En Vercel: Asegúrate de que las variables estén configuradas en el dashboard de Vercel
+              </p>
+            )}
           </div>
         )}
+
+        {/* Información de entorno */}
+        <div className="mt-3 p-2 bg-gray-100 rounded text-gray-700 text-xs">
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <span className="font-medium">Entorno:</span> {status.details.environment}
+            </div>
+            <div>
+              <span className="font-medium">Dominio:</span> {status.details.currentDomain}
+            </div>
+            <div>
+              <span className="font-medium">Vercel:</span> {status.details.vercelDeployment ? 'Sí' : 'No'}
+            </div>
+            <div>
+              <span className="font-medium">DB Init:</span> {status.details.dbInitialized ? 'Sí' : 'No'}
+            </div>
+          </div>
+        </div>
 
         {status.error && (
           <div className="mt-3 p-2 bg-red-100 rounded text-red-700 text-xs">

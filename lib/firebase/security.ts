@@ -3,6 +3,7 @@ export const SECURITY_CONFIG = {
   // Dominios permitidos para producción
   ALLOWED_DOMAINS: [
     'ferreteria-michoacana.vercel.app',
+    'pagina-web-ferreterias.vercel.app', // Agregado para el deploy actual
     'ferrelamichoacana.com',
     'www.ferrelamichoacana.com',
     'localhost:3000' // Solo para desarrollo
@@ -18,6 +19,7 @@ export const SECURITY_CONFIG = {
     production: {
       allowedOrigins: [
         'https://ferreteria-michoacana.vercel.app',
+        'https://pagina-web-ferreterias.vercel.app', // Agregado para el deploy actual
         'https://ferrelamichoacana.com',
         'https://www.ferrelamichoacana.com'
       ],
@@ -32,10 +34,28 @@ export function validateCurrentDomain(): boolean {
   if (typeof window === 'undefined') return true // Server-side es seguro
   
   const currentOrigin = window.location.origin
+  const currentHostname = window.location.hostname
   const environment = process.env.NODE_ENV || 'development'
-  const config = SECURITY_CONFIG.ENVIRONMENT_CONFIG[environment as keyof typeof SECURITY_CONFIG.ENVIRONMENT_CONFIG]
   
-  return config.allowedOrigins.includes(currentOrigin)
+  // En desarrollo, permitir localhost
+  if (environment === 'development' && (currentHostname === 'localhost' || currentHostname === '127.0.0.1')) {
+    return true
+  }
+  
+  // Permitir cualquier subdominio de vercel.app en producción
+  if (currentHostname.endsWith('.vercel.app')) {
+    return true
+  }
+  
+  // Verificar dominios específicos configurados
+  const config = SECURITY_CONFIG.ENVIRONMENT_CONFIG[environment as keyof typeof SECURITY_CONFIG.ENVIRONMENT_CONFIG]
+  const isAllowed = config.allowedOrigins.includes(currentOrigin)
+  
+  if (!isAllowed) {
+    console.warn(`🔒 Domain validation: ${currentOrigin} not in allowed list:`, config.allowedOrigins)
+  }
+  
+  return isAllowed
 }
 
 // Función para validar la configuración de Firebase
