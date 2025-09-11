@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { collection, addDoc, query, where, getDocs, serverTimestamp } from 'firebase/firestore'
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  serverTimestamp,
+  updateDoc
+} from 'firebase/firestore'
 import { db } from '@/lib/firebase/config'
 
 export async function POST(request: NextRequest) {
@@ -46,7 +54,10 @@ export async function POST(request: NextRequest) {
       ipAddress: request.headers.get('x-forwarded-for') || 'unknown'
     }
 
-    const docRef = await addDoc(collection(db, 'newsletterSubscriptions'), subscriptionData)
+    const docRef = await addDoc(
+      collection(db, 'newsletterSubscriptions'),
+      subscriptionData
+    )
 
     // En producción, aquí se podría enviar un email de confirmación
     // await sendWelcomeEmail(email)
@@ -56,7 +67,6 @@ export async function POST(request: NextRequest) {
       message: 'Suscripción exitosa al newsletter',
       subscriptionId: docRef.id
     })
-
   } catch (error) {
     console.error('Error subscribing to newsletter:', error)
     return NextResponse.json(
@@ -93,8 +103,8 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Marcar como inactivo en lugar de eliminar (para auditoría)
-    const doc = querySnapshot.docs[0]
-    await doc.ref.update({
+    const docSnap = querySnapshot.docs[0]
+    await updateDoc(docSnap.ref, {
       active: false,
       unsubscribedAt: serverTimestamp()
     })
@@ -103,7 +113,6 @@ export async function DELETE(request: NextRequest) {
       success: true,
       message: 'Desuscripción exitosa del newsletter'
     })
-
   } catch (error) {
     console.error('Error unsubscribing from newsletter:', error)
     return NextResponse.json(
