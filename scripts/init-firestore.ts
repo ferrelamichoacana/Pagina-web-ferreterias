@@ -3,7 +3,7 @@
 
 import { initializeApp, cert } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
-import { branches } from '../lib/data/branches'
+import { realBranches, realBrands } from '../lib/data/realData'
 
 // Configuración de Firebase Admin usando el archivo JSON
 const serviceAccount = require('../website-ferreteria-firebase-adminsdk-fbsvc-928ca1763f.json')
@@ -22,14 +22,14 @@ async function initializeFirestore() {
   try {
     // 1. Crear colección de sucursales
     console.log('📍 Creando sucursales...')
-    for (const branch of branches) {
+    for (const branch of realBranches) {
       await db.collection('branches').doc(branch.id).set({
         ...branch,
         createdAt: new Date(),
         updatedAt: new Date()
       })
     }
-    console.log(`✅ ${branches.length} sucursales creadas`)
+    console.log(`✅ ${realBranches.length} sucursales creadas`)
 
     // 2. Crear usuarios de ejemplo
     console.log('👥 Creando usuarios de ejemplo...')
@@ -221,43 +221,18 @@ async function initializeFirestore() {
     }
     console.log(`✅ ${itTickets.length} tickets IT creados`)
 
-    // 7. Crear marcas de ejemplo
+    // 7. Crear marcas reales
     console.log('🏷️ Creando marcas...')
-    const brands = [
-      {
-        name: 'DeWalt',
-        logoUrl: 'https://res.cloudinary.com/demo/image/upload/v1/brands/dewalt-logo.png',
-        category: 'Herramientas Eléctricas',
-        description: 'Herramientas profesionales de alta calidad',
-        website: 'https://www.dewalt.com',
-        active: true
-      },
-      {
-        name: 'Makita',
-        logoUrl: 'https://res.cloudinary.com/demo/image/upload/v1/brands/makita-logo.png',
-        category: 'Herramientas',
-        description: 'Innovación en herramientas eléctricas',
-        website: 'https://www.makita.com',
-        active: true
-      },
-      {
-        name: 'Truper',
-        logoUrl: 'https://res.cloudinary.com/demo/image/upload/v1/brands/truper-logo.png',
-        category: 'Herramientas Mexicanas',
-        description: 'Herramientas mexicanas de calidad',
-        website: 'https://www.truper.com',
-        active: true
-      }
-    ]
-
-    for (let i = 0; i < brands.length; i++) {
+    
+    for (let i = 0; i < realBrands.length; i++) {
       await db.collection('brands').add({
-        ...brands[i],
+        ...realBrands[i],
+        customId: realBrands[i].id, // Mantener ID original como campo
         createdAt: new Date(),
         updatedAt: new Date()
       })
     }
-    console.log(`✅ ${brands.length} marcas creadas`)
+    console.log(`✅ ${realBrands.length} marcas creadas`)
 
     // 8. Crear configuración del sistema
     console.log('⚙️ Creando configuración del sistema...')
@@ -281,13 +256,13 @@ async function initializeFirestore() {
 
     console.log('\n🎉 ¡Estructura de Firestore inicializada correctamente!')
     console.log('\n📊 Resumen:')
-    console.log(`- ${branches.length} sucursales`)
+    console.log(`- ${realBranches.length} sucursales`)
     console.log(`- ${users.length} usuarios de ejemplo`)
     console.log(`- ${contactRequests.length} solicitudes de contacto`)
     console.log(`- ${jobPostings.length} vacantes de empleo`)
     console.log(`- ${jobApplications.length} aplicaciones de trabajo`)
     console.log(`- ${itTickets.length} tickets IT`)
-    console.log(`- ${brands.length} marcas`)
+    console.log(`- ${realBrands.length} marcas`)
     console.log('- 1 configuración del sistema')
 
     console.log('\n🔐 Usuarios de prueba creados:')

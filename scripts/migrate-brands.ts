@@ -1,112 +1,16 @@
 #!/usr/bin/env npx ts-node --project tsconfig.node.json
 
 /**
- * Script para migrar las marcas desde el hook mock a Firestore
+ * Script para migrar las marcas REALES desde el archivo centralizado a Firestore
  * Ejecutar: npm run migrate-brands
  */
 
 import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebase/firestore'
+import { realBrands } from '../lib/data/realData'
 
-// Datos de marcas (extraídos del archivo useSimpleFirebaseData.ts)
-const mockBrands = [
-  {
-    id: '1',
-    name: 'Häfele',
-    logo: '/images/haefele_logo.png',
-    category: 'Herrajes',
-    featured: true,
-    active: true
-  },
-  {
-    id: '2',
-    name: 'Cerrajes',
-    logo: '/images/logo_cerrajes.png',
-    category: 'Cerrajes',
-    featured: true,
-    active: true
-  },
-  {
-    id: '3',
-    name: 'HandyHome',
-    logo: '/images/logo_handyhome.png',
-    category: 'Herrajes, Jaladeras y Accesorios',
-    featured: true,
-    active: true
-  },
-  {
-    id: '4',
-    name: 'HERMA',
-    logo: '/images/logo_herma.png',
-    category: 'Cerraduras y Herrajes',
-    featured: true,
-    active: true
-  },
-  {
-    id: '5',
-    name: 'Soarma',
-    logo: '/images/logo_soarma.png',
-    category: 'Herrajes y Accesorios',
-    featured: true,
-    active: true
-  },
-  {
-    id: '6',
-    name: 'Sayer',
-    logo: '/images/logo_sayer.png',
-    category: 'Pinturas',
-    featured: true,
-    active: true
-  },
-  {
-    id: '7',
-    name: 'RESISTOL',
-    logo: '/images/logo_resistol.png',
-    category: 'Pegamentos',
-    featured: true,
-    active: true
-  },
-  {
-    id: '8',
-    name: 'TRUPER',
-    logo: '/images/logo_truper.png',
-    category: 'Herramientas',
-    featured: true,
-    active: true
-  },
-  {
-    id: '9',
-    name: 'DeWALT',
-    logo: '/images/logo_dewalt.png',
-    category: 'Herramientas',
-    featured: true,
-    active: true
-  },
-  {
-    id: '10',
-    name: 'Makita',
-    logo: '/images/logo_makita.png',
-    category: 'Herramientas Eléctricas',
-    featured: true,
-    active: true
-  },
-  {
-    id: '11',
-    name: 'Black & Decker',
-    logo: '/images/logo_blackdecker.png',
-    category: 'Herramientas',
-    featured: false,
-    active: true
-  },
-  {
-    id: '12',
-    name: 'Stanley',
-    logo: '/images/logo_stanley.png',
-    category: 'Herramientas',
-    featured: false,
-    active: true
-  }
-]
+// Usamos directamente los datos reales
+const mockBrands = realBrands
 
 // Configuración de Firebase para el script
 const firebaseConfig = {

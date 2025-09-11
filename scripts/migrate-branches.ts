@@ -7,38 +7,10 @@
 
 import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebase/firestore'
+import { realBranches } from '../lib/data/realData'
 
-// Importar directamente los datos de sucursales
-const branches = [
-  {
-    id: 'puente',
-    name: 'Sucursal Puente',
-    city: 'Morelia',
-    state: 'Michoacán',
-    address: 'Av. Puente #123, Col. Puente',
-    phone: '(443) 123-4567',
-    email: 'puente@ferreterialamichoacana.com',
-    schedule: 'Lun-Vie: 8:00-19:00, Sáb: 8:00-17:00, Dom: 9:00-15:00',
-    coordinates: { lat: 19.7026, lng: -101.1947 },
-    isMain: true,
-    managerId: null,
-    services: ['Venta al público', 'Venta mayorista', 'Entrega a domicilio', 'Asesoría técnica']
-  },
-  {
-    id: 'santa-barbara',
-    name: 'Sucursal Santa Barbara',
-    city: 'Morelia',
-    state: 'Michoacán',
-    address: 'Av. Santa Barbara #456, Col. Santa Barbara',
-    phone: '(443) 234-5678',
-    email: 'santabarbara@ferreterialamichoacana.com',
-    schedule: 'Lun-Vie: 8:00-18:00, Sáb: 8:00-16:00',
-    coordinates: { lat: 19.6888, lng: -101.1844 },
-    isMain: false,
-    managerId: null,
-    services: ['Venta al público', 'Venta mayorista', 'Entrega a domicilio']
-  }
-]
+// Usamos directamente los datos reales de sucursales
+const branches = realBranches
 
 // Configuración de Firebase para el script
 const firebaseConfig = {

@@ -13,6 +13,7 @@ import {
   orderBy 
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase/config'
+import { realBranches, realBrands } from '@/lib/data/realData'
 
 // Types para los datos
 interface Branch {
@@ -48,103 +49,20 @@ interface Brand {
   updatedAt: Date
 }
 
-// Datos mock como fallback si Firebase no está disponible
-const mockBranches = [
-  {
-    id: '1',
-    customId: 'puente',
-    name: 'Sucursal Puente',
-    city: 'Morelia',
-    state: 'Michoacán',
-    address: 'Av. Puente #123, Col. Puente',
-    phone: '(443) 123-4567',
-    email: 'puente@ferreterialamichoacana.com',
-    schedule: 'Lun-Vie: 8:00-19:00, Sáb: 8:00-17:00, Dom: 9:00-15:00',
-    coordinates: { lat: 19.7026, lng: -101.1947 },
-    isMain: true,
-    managerId: null,
-    services: ['Venta al público', 'Venta mayorista', 'Entrega a domicilio', 'Asesoría técnica'],
-    active: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: '2',
-    customId: 'santa-barbara',
-    name: 'Sucursal Santa Barbara',
-    city: 'Morelia',
-    state: 'Michoacán',
-    address: 'Av. Santa Barbara #456, Col. Santa Barbara',
-    phone: '(443) 234-5678',
-    email: 'santabarbara@ferreterialamichoacana.com',
-    schedule: 'Lun-Vie: 8:00-18:00, Sáb: 8:00-16:00',
-    coordinates: { lat: 19.6888, lng: -101.1844 },
-    isMain: false,
-    managerId: null,
-    services: ['Venta al público', 'Venta mayorista', 'Entrega a domicilio'],
-    active: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-]
+// Datos mock como fallback si Firebase no está disponible - DATOS REALES
+const mockBranches = realBranches.map(branch => ({
+  ...branch,
+  customId: branch.id,
+  createdAt: new Date(),
+  updatedAt: new Date()
+}))
 
-const mockBrands = [
-  {
-    id: '1',
-    customId: '1',
-    name: 'Häfele',
-    logo: '/images/haefele_logo.png',
-    category: 'Herrajes',
-    featured: true,
-    active: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: '2',
-    customId: '2',
-    name: 'Cerrajes',
-    logo: '/images/logo_cerrajes.png',
-    category: 'Cerrajes',
-    featured: true,
-    active: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: '3',
-    customId: '3',
-    name: 'HandyHome',
-    logo: '/images/logo_handyhome.png',
-    category: 'Herrajes, Jaladeras y Accesorios',
-    featured: true,
-    active: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: '4',
-    customId: '4',
-    name: 'HERMA',
-    logo: '/images/logo_herma.png',
-    category: 'Cerraduras y Herrajes',
-    featured: true,
-    active: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: '5',
-    customId: '5',
-    name: 'Soarma',
-    logo: '/images/logo_soarma.png',
-    category: 'Herrajes y Accesorios',
-    featured: true,
-    active: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-]
+const mockBrands = realBrands.map(brand => ({
+  ...brand,
+  customId: brand.id,
+  createdAt: new Date(),
+  updatedAt: new Date()
+}))
 
 // Hook para manejo de datos Firebase con fallback a mocks
 export function useSimpleFirebaseData() {
