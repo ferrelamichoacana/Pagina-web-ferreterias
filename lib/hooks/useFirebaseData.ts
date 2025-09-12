@@ -11,7 +11,7 @@ import {
   orderBy, 
   where 
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestore, checkFirebaseAvailability } from '@/lib/firebase/utils'
 import type { 
   Branch, 
   Brand, 
@@ -30,6 +30,12 @@ export function useBranches() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!isFirebaseConfigured() || !db) {
+      setError('Firebase no está configurado')
+      setLoading(false)
+      return
+    }
+
     const unsubscribe = onSnapshot(
       query(collection(db, 'branches'), orderBy('createdAt')),
       (snapshot) => {
@@ -61,17 +67,29 @@ export function useBrands() {
   const [brands, setBrands] = useState<Brand[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [refetchTrigger, setRefetchTrigger] = useState(0)
+
+  // Función para forzar una recarga de datos
+  const refetch = () => {
+    setRefetchTrigger(prev => prev + 1)
+    setLoading(true)
+  }
 
   useEffect(() => {
     console.log('🔄 Iniciando useBrands hook')
-    console.log('🔥 Firebase db:', db ? 'Configurado' : 'No configurado')
     
-    if (!db) {
-      console.error('❌ Firebase db no configurado')
+    // Verificar disponibilidad de Firebase
+    const firebaseStatus = checkFirebaseAvailability()
+    console.log('🔥 Firebase status:', firebaseStatus)
+    
+    if (!firebaseStatus.available || !firebaseStatus.db) {
+      console.error('❌ Firebase no configurado')
       setError('Firebase no está configurado')
       setLoading(false)
       return
     }
+
+    const db = firebaseStatus.db
 
     const unsubscribe = onSnapshot(
       collection(db, 'brands'), // Query simple sin orderBy para evitar el índice compuesto
@@ -115,7 +133,7 @@ export function useBrands() {
       console.log('🧹 Limpiando useBrands subscription')
       unsubscribe()
     }
-  }, [])
+  }, [refetchTrigger]) // Agregar refetchTrigger como dependencia
 
   console.log('📊 useBrands estado actual:', {
     brandsCount: brands.length,
@@ -124,7 +142,7 @@ export function useBrands() {
     brands: brands.slice(0, 2) // Solo mostrar las primeras 2 para debug
   })
 
-  return { brands, loading, error }
+  return { brands, loading, error, refetch }
 }
 
 // Hook para obtener configuración del sistema

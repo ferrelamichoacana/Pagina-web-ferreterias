@@ -20,7 +20,7 @@ import Image from 'next/image'
 import type { Brand } from '@/types'
 
 export default function BrandsManager() {
-  const { brands, loading, error } = useBrands()
+  const { brands, loading, error, refetch } = useBrands()
   
   // Debug: Log para entender el estado de Firebase
   console.log('🔍 BrandsManager Debug:', {
@@ -253,8 +253,10 @@ export default function BrandsManager() {
       
       console.log('🔄 Reiniciando formulario y recargando datos...')
       resetForm()
-      // Refresh data
-      window.location.reload()
+      // Refrescar datos usando refetch en lugar de recargar la página
+      refetch()
+      
+      alert(`Marca ${editingBrand ? 'actualizada' : 'creada'} exitosamente`)
     } catch (error) {
       console.error('💥 Error completo:', error)
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
@@ -269,19 +271,29 @@ export default function BrandsManager() {
   const handleDelete = async (brandId: string, brandName: string) => {
     if (window.confirm(`¿Estás seguro de que quieres eliminar la marca "${brandName}"?`)) {
       try {
+        console.log(`🗑️  Iniciando eliminación de marca: ${brandName} (${brandId})`)
+        
         const response = await fetch(`/api/brands?id=${brandId}`, {
           method: 'DELETE'
         })
 
+        console.log('📡 Respuesta del servidor:', response.status, response.statusText)
+
         if (!response.ok) {
           const error = await response.json()
+          console.error('❌ Error del servidor:', error)
           throw new Error(error.error || 'Error al eliminar marca')
         }
 
-        // Refresh data
-        window.location.reload()
+        const result = await response.json()
+        console.log('✅ Marca eliminada:', result)
+
+        // Refrescar datos usando la función refetch en lugar de recargar la página
+        refetch()
+        
+        alert(`Marca "${brandName}" eliminada exitosamente`)
       } catch (error) {
-        console.error('Error deleting brand:', error)
+        console.error('💥 Error deleting brand:', error)
         alert(`Error al eliminar la marca: ${error instanceof Error ? error.message : 'Error desconocido'}`)
       }
     }
@@ -305,8 +317,8 @@ export default function BrandsManager() {
         throw new Error(error.error || 'Error al actualizar estado')
       }
 
-      // Refresh data
-      window.location.reload()
+      // Refrescar datos usando refetch
+      refetch()
     } catch (error) {
       console.error('Error updating brand status:', error)
       alert(`Error al actualizar el estado de la marca: ${error instanceof Error ? error.message : 'Error desconocido'}`)
@@ -365,7 +377,7 @@ export default function BrandsManager() {
               <p className="text-red-700 text-sm">{error}</p>
             </div>
             <button
-              onClick={() => window.location.reload()}
+              onClick={() => refetch()}
               className="btn-secondary text-xs"
             >
               Recargar

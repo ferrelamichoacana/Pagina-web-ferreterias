@@ -17,6 +17,7 @@ import { db } from '@/lib/firebase'
 export async function GET(request: NextRequest) {
   try {
     if (!db) {
+      console.error('❌ Firebase no configurado en GET')
       return NextResponse.json(
         { success: false, error: 'Firebase no está configurado' },
         { status: 503 }
@@ -27,6 +28,8 @@ export async function GET(request: NextRequest) {
     const activeOnly = searchParams.get('active') === 'true'
     const featuredOnly = searchParams.get('featured') === 'true'
     const category = searchParams.get('category')
+
+    console.log('📊 Obteniendo marcas con filtros:', { activeOnly, featuredOnly, category })
 
     const brandsRef = collection(db, 'brands')
     let q = query(brandsRef, orderBy('name'))
@@ -46,6 +49,8 @@ export async function GET(request: NextRequest) {
       id: doc.id,
       ...doc.data()
     }))
+
+    console.log(`✅ Obtenidas ${brands.length} marcas`)
 
     return NextResponse.json({
       success: true,
@@ -255,10 +260,11 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE - Eliminar marca (soft delete)
+// DELETE - Eliminar marca completamente
 export async function DELETE(request: NextRequest) {
   try {
     if (!db) {
+      console.error('❌ Firebase no configurado en DELETE')
       return NextResponse.json(
         { success: false, error: 'Firebase no está configurado' },
         { status: 503 }
@@ -275,12 +281,13 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    // Soft delete - marcar como inactiva
+    console.log(`🗑️  Eliminando marca con ID: ${id}`)
+
+    // Eliminación completa del documento
     const brandRef = doc(db, 'brands', id)
-    await updateDoc(brandRef, {
-      active: false,
-      updatedAt: serverTimestamp()
-    })
+    await deleteDoc(brandRef)
+
+    console.log(`✅ Marca ${id} eliminada exitosamente`)
 
     return NextResponse.json({
       success: true,
@@ -288,9 +295,10 @@ export async function DELETE(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error deleting brand:', error)
+    console.error('❌ Error deleting brand:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
     return NextResponse.json(
-      { success: false, error: 'Error al eliminar marca' },
+      { success: false, error: `Error al eliminar marca: ${errorMessage}` },
       { status: 500 }
     )
   }
