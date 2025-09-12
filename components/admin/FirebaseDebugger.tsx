@@ -12,7 +12,7 @@ import {
   query,
   orderBy
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestore } from '@/lib/firebase/utils'
 import {
   DocumentTextIcon,
   PlusIcon,
@@ -66,6 +66,7 @@ export default function FirebaseDebugger() {
     clearMessages()
     
     try {
+      const db = getFirestore()
       const q = query(collection(db, collectionName))
       const querySnapshot = await getDocs(q)
       
@@ -131,6 +132,7 @@ export default function FirebaseDebugger() {
         updatedAt: new Date()
       }
       
+      const db = getFirestore()
       const docRef = await addDoc(collection(db, selectedCollection), docData)
       setSuccess(`Documento creado con ID: ${docRef.id}`)
       setFormData('')
@@ -165,6 +167,7 @@ export default function FirebaseDebugger() {
         updatedAt: new Date()
       }
       
+      const db = getFirestore()
       await updateDoc(doc(db, selectedCollection, editingDoc.id), docData)
       setSuccess(`Documento ${editingDoc.id} actualizado`)
       setFormData('')
@@ -189,6 +192,7 @@ export default function FirebaseDebugger() {
     clearMessages()
 
     try {
+      const db = getFirestore()
       await deleteDoc(doc(db, selectedCollection, docId))
       setSuccess(`Documento ${docId} eliminado`)
       

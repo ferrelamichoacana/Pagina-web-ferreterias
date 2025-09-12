@@ -30,12 +30,13 @@ export function useBranches() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!isFirebaseConfigured() || !db) {
+    if (!checkFirebaseAvailability()) {
       setError('Firebase no está configurado')
       setLoading(false)
       return
     }
 
+    const db = getFirestore()
     const unsubscribe = onSnapshot(
       query(collection(db, 'branches'), orderBy('createdAt')),
       (snapshot) => {
@@ -152,6 +153,7 @@ export function useSystemConfig() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    const db = getFirestore()
     const unsubscribe = onSnapshot(
       doc(db, 'systemConfig', 'general'),
       (doc) => {
@@ -185,6 +187,7 @@ export function useTestimonials() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    const db = getFirestore()
     const unsubscribe = onSnapshot(
       query(
         collection(db, 'testimonials'), 
@@ -221,6 +224,7 @@ export function useNews() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    const db = getFirestore()
     const unsubscribe = onSnapshot(
       query(
         collection(db, 'news'), 
@@ -257,6 +261,7 @@ export function useUsers() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    const db = getFirestore()
     const unsubscribe = onSnapshot(
       query(collection(db, 'users'), orderBy('createdAt')),
       (snapshot) => {
@@ -289,6 +294,7 @@ export function useContactRequests(filters?: { branchId?: string; assignedTo?: s
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    const db = getFirestore()
     let q = query(collection(db, 'contactRequests'), orderBy('createdAt', 'desc'))
 
     // Aplicar filtros si se proporcionan
@@ -335,6 +341,7 @@ export function useCollection<T>(collectionName: string, queryConstraints?: any[
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    const db = getFirestore()
     let q = collection(db, collectionName)
     
     if (queryConstraints && queryConstraints.length > 0) {

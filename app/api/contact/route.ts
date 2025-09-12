@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestore } from '@/lib/firebase/utils'
 import { sendContactConfirmation } from '@/lib/utils/email'
 import { createSystemLog } from '@/lib/utils/firestore'
 
@@ -18,14 +18,7 @@ function isValidPhone(phone: string): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    // Verificar si Firebase está disponible
-    if (!db) {
-      console.warn('⚠️ Firebase no está configurado correctamente')
-      return NextResponse.json(
-        { success: false, error: 'Servicio temporalmente no disponible' },
-        { status: 503 }
-      )
-    }
+    const db = getFirestore()
 
     const body = await request.json()
     

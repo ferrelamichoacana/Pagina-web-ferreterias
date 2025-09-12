@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSystemConfig } from '@/lib/hooks/useFirebaseData'
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestore } from '@/lib/firebase/utils'
 import { 
   CogIcon,
   BuildingOfficeIcon,
@@ -120,6 +120,7 @@ export default function SystemConfigManager() {
     setIsSubmitting(true)
 
     try {
+      const db = getFirestore()
       await updateDoc(doc(db, 'systemConfig', 'general'), {
         ...formData,
         updatedAt: serverTimestamp()

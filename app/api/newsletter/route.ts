@@ -8,7 +8,7 @@ import {
   serverTimestamp,
   updateDoc
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestore } from '@/lib/firebase/utils'
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,6 +30,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    const db = getFirestore()
 
     // Verificar si el email ya está suscrito
     const q = query(
@@ -87,6 +89,8 @@ export async function DELETE(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    const db = getFirestore()
 
     // Buscar y desactivar suscripción
     const q = query(

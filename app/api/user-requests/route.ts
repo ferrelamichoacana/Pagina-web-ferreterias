@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { collection, query, where, orderBy, getDocs } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestore } from '@/lib/firebase/utils'
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,6 +14,8 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    const db = getFirestore()
 
     // Crear query para obtener solicitudes del usuario
     let q

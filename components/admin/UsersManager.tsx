@@ -7,7 +7,7 @@ import {
   doc, 
   serverTimestamp 
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestore } from '@/lib/firebase/utils'
 import { 
   UsersIcon,
   PencilIcon,
@@ -59,6 +59,7 @@ export default function UsersManager() {
     setIsSubmitting(true)
 
     try {
+      const db = getFirestore()
       await updateDoc(doc(db, 'users', editingUser.uid), {
         ...formData,
         updatedAt: serverTimestamp()

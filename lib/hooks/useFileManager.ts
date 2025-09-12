@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { collection, addDoc, deleteDoc, doc, query, where, onSnapshot, orderBy, updateDoc } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestore } from '@/lib/firebase/utils'
 
 export interface FileRecord {
   id: string
@@ -43,6 +43,7 @@ export function useFileManager({
   // Función para guardar archivo en Firestore
   const saveFileRecord = useCallback(async (fileData: Omit<FileRecord, 'id'>) => {
     try {
+      const db = getFirestore()
       const docRef = await addDoc(collection(db, 'files'), {
         ...fileData,
         uploadedAt: new Date(),
@@ -85,6 +86,7 @@ export function useFileManager({
       }
       
       // Eliminar de Firestore
+      const db = getFirestore()
       await deleteDoc(doc(db, 'files', fileId))
       
       if (autoSync) {
@@ -112,6 +114,7 @@ export function useFileManager({
       setLoading(true)
       setError(null)
       
+      const db = getFirestore()
       let q = query(collection(db, 'files'), orderBy('uploadedAt', 'desc'))
       
       // Aplicar filtros
@@ -228,6 +231,7 @@ export function useFileManager({
     updates: Partial<Pick<FileRecord, 'description' | 'tags' | 'isPublic'>>
   ) => {
     try {
+      const db = getFirestore()
       const fileRef = doc(db, 'files', fileId)
       await updateDoc(fileRef, updates)
       

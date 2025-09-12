@@ -10,7 +10,7 @@ import {
   updateProfile
 } from 'firebase/auth'
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
-import { auth, db } from '@/lib/firebase'
+import { getAuth, getFirestore } from '@/lib/firebase/utils'
 import { User, UserRole } from '@/types'
 
 interface AuthContextType {
@@ -33,6 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Función para obtener datos adicionales del usuario desde Firestore
   const fetchUserData = async (firebaseUser: FirebaseUser): Promise<User | null> => {
     try {
+      const db = getFirestore()
       const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
       if (userDoc.exists()) {
         const userData = userDoc.data()
@@ -84,6 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       setLoading(true)
+      const auth = getAuth()
       const result = await signInWithEmailAndPassword(auth, email, password)
       
       // Los datos del usuario se actualizarán automáticamente por onAuthStateChanged
@@ -121,6 +123,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (email: string, password: string, displayName: string, role: UserRole = 'cliente') => {
     try {
       setLoading(true)
+      const auth = getAuth()
+      const db = getFirestore()
       const result = await createUserWithEmailAndPassword(auth, email, password)
       
       // Actualizar el perfil con el nombre
@@ -163,6 +167,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Escuchar cambios en el estado de autenticación
   useEffect(() => {
+    const auth = getAuth()
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       console.log('Auth state changed:', firebaseUser?.email)
       setFirebaseUser(firebaseUser)
@@ -186,6 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Función para cerrar sesión
   const logout = async () => {
     try {
+      const auth = getAuth()
       await signOut(auth)
       setUser(null)
       setFirebaseUser(null)
