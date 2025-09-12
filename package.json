@@ -19,6 +19,7 @@
     "migrate-branches": "npx ts-node --project tsconfig.node.json scripts/migrate-branches.ts",
     "migrate-brands": "npx ts-node --project tsconfig.node.json scripts/migrate-brands.ts",
     "migrate-brands-complete": "npx ts-node --project tsconfig.node.json scripts/migrate-brands-complete.ts",
+    "migrate-brands-local": "npx ts-node --project tsconfig.node.json scripts/migrate-brands-local.ts",
     "verify-brands": "npx ts-node --project tsconfig.node.json scripts/verify-brands.ts",
     "upload-logos": "node scripts/upload-logos-cloudinary.js",
     "create-admin": "node scripts/create-admin-user.js",

@@ -27,35 +27,30 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 }
 
-// URLs base para Cloudinary - usando URLs de ejemplo que puedes reemplazar
-const cloudinaryBaseUrl = 'https://res.cloudinary.com/dino-cloudinary/image/upload'
-
-// Mapeo de logos locales a URLs de Cloudinary (URLs temporales - reemplaza por las reales)
+// URLs de Cloudinary con transformaciones automáticas para logos optimizados
 const logoUrls: { [key: string]: string } = {
-  '/images/haefele_logo.png': `${cloudinaryBaseUrl}/v1726147200/ferreteria-la-michoacana/brands/haefele_logo.png`,
-  '/images/logo_cerrajes.png': `${cloudinaryBaseUrl}/v1726147200/ferreteria-la-michoacana/brands/logo_cerrajes.png`,
-  '/images/logo_handyhome.png': `${cloudinaryBaseUrl}/v1726147200/ferreteria-la-michoacana/brands/logo_handyhome.png`,
-  '/images/logo_herma.png': `${cloudinaryBaseUrl}/v1726147200/ferreteria-la-michoacana/brands/logo_herma.png`,
-  '/images/logo_soarma.png': `${cloudinaryBaseUrl}/v1726147200/ferreteria-la-michoacana/brands/logo_soarma.png`,
-  '/images/logo_sayer.png': `${cloudinaryBaseUrl}/v1726147200/ferreteria-la-michoacana/brands/logo_sayer.png`,
-  '/images/logo_resistol.png': `${cloudinaryBaseUrl}/v1726147200/ferreteria-la-michoacana/brands/logo_resistol.png`,
-  '/images/logo_truper.png': `${cloudinaryBaseUrl}/v1726147200/ferreteria-la-michoacana/brands/logo_truper.png`,
-  '/images/logo_dewalt.png': `${cloudinaryBaseUrl}/v1726147200/ferreteria-la-michoacana/brands/logo_dewalt.png`,
-  '/images/logo_makita.png': `${cloudinaryBaseUrl}/v1726147200/ferreteria-la-michoacana/brands/logo_makita.png`,
-  '/images/logo_silverline.png': `${cloudinaryBaseUrl}/v1726147200/ferreteria-la-michoacana/brands/logo_silverline.png`,
+  '/images/haefele_logo.png': 'https://res.cloudinary.com/dino-cloudinary/image/upload/c_fit,h_200,w_200,f_auto,q_auto/ferreteria-la-michoacana/brands/hafele',
+  '/images/logo_cerrajes.png': 'https://res.cloudinary.com/dino-cloudinary/image/upload/c_fit,h_200,w_200,f_auto,q_auto/ferreteria-la-michoacana/brands/cerrajes',
+  '/images/logo_dewalt.png': 'https://res.cloudinary.com/dino-cloudinary/image/upload/c_fit,h_200,w_200,f_auto,q_auto/ferreteria-la-michoacana/brands/dewalt',
+  '/images/logo_handyhome.png': 'https://res.cloudinary.com/dino-cloudinary/image/upload/c_fit,h_200,w_200,f_auto,q_auto/ferreteria-la-michoacana/brands/handyhome',
+  '/images/logo_herma.png': 'https://res.cloudinary.com/dino-cloudinary/image/upload/c_fit,h_200,w_200,f_auto,q_auto/ferreteria-la-michoacana/brands/herma',
+  '/images/logo_makita.png': 'https://res.cloudinary.com/dino-cloudinary/image/upload/c_fit,h_200,w_200,f_auto,q_auto/ferreteria-la-michoacana/brands/makita',
+  '/images/logo_resistol.png': 'https://res.cloudinary.com/dino-cloudinary/image/upload/c_fit,h_200,w_200,f_auto,q_auto/ferreteria-la-michoacana/brands/resistol',
+  '/images/logo_sayer.png': 'https://res.cloudinary.com/dino-cloudinary/image/upload/c_fit,h_200,w_200,f_auto,q_auto/ferreteria-la-michoacana/brands/sayer',
+  '/images/logo_silverline.png': 'https://res.cloudinary.com/dino-cloudinary/image/upload/c_fit,h_200,w_200,f_auto,q_auto/ferreteria-la-michoacana/brands/silverline',
+  '/images/logo_soarma.png': 'https://res.cloudinary.com/dino-cloudinary/image/upload/c_fit,h_200,w_200,f_auto,q_auto/ferreteria-la-michoacana/brands/soarma',
+  '/images/logo_truper.png': 'https://res.cloudinary.com/dino-cloudinary/image/upload/c_fit,h_200,w_200,f_auto,q_auto/ferreteria-la-michoacana/brands/truper',
 }
 
 async function uploadImageToCloudinary(imagePath: string): Promise<string> {
-  // Para este script, usaremos URLs predefinidas
-  // En un entorno real, aquí subirías la imagen usando la API de Cloudinary
-  
+  // Buscar URL en el mapeo predefinido
   const cloudinaryUrl = logoUrls[imagePath]
   if (cloudinaryUrl) {
     return cloudinaryUrl
   }
   
   // Fallback a una imagen placeholder
-  return `${cloudinaryBaseUrl}/placeholder.png`
+  return 'https://res.cloudinary.com/dino-cloudinary/image/upload/c_fit,h_200,w_200,f_auto,q_auto/ferreteria-la-michoacana/brands/placeholder'
 }
 
 async function clearExistingBrands(db: any) {
