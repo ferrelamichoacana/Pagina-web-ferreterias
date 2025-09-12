@@ -11,18 +11,35 @@ import {
   orderBy,
   serverTimestamp 
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestore, checkFirebaseAvailability } from '@/lib/firebase/utils'
+
+// Definir el tipo Brand
+interface Brand {
+  id: string
+  name: string
+  logo: string
+  website: string
+  description: string
+  isActive: boolean
+  categories: string[]
+  createdAt: Date
+  updatedAt: Date
+}
 
 // GET - Obtener todas las marcas
 export async function GET(request: NextRequest) {
   try {
-    if (!db) {
-      console.error('❌ Firebase no configurado en GET')
+    // Verificar configuración de Firebase con más detalle
+    if (!checkFirebaseAvailability()) {
+      console.error('❌ Firebase no está disponible en GET')
       return NextResponse.json(
         { success: false, error: 'Firebase no está configurado' },
         { status: 503 }
       )
     }
+
+    const db = getFirestore()
+    console.log('✅ Firebase DB obtenido exitosamente')
 
     const { searchParams } = new URL(request.url)
     const activeOnly = searchParams.get('active') === 'true'
@@ -72,13 +89,16 @@ export async function POST(request: NextRequest) {
   try {
     console.log('🚀 API POST /api/brands iniciado')
     
-    if (!db) {
-      console.error('❌ Firebase no configurado')
+    if (!checkFirebaseAvailability()) {
+      console.error('❌ Firebase no está disponible en POST')
       return NextResponse.json(
         { success: false, error: 'Firebase no está configurado' },
         { status: 503 }
       )
     }
+
+    const db = getFirestore()
+    console.log('✅ Firebase DB obtenido para POST')
 
     const body = await request.json()
     console.log('📥 Datos recibidos:', body)
@@ -124,21 +144,32 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Preparar datos para Firestore
+    // Preparar datos para Firestore (sin ID, Firestore lo generará)
     const brandData = {
-      customId: body.customId || `brand_${Date.now()}`,
-      name: body.name.trim(),
-      logoUrl: body.logo?.trim() || '',
-      category: body.category.trim(),
-      featured: Boolean(body.featured),
-      active: Boolean(body.active !== undefined ? body.active : true),
-      description: body.description?.trim() || '',
+      name: body.name,
+      logo: body.logo || '',
       website: website || '',
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      description: body.description || '',
+      isActive: body.isActive ?? true,
+      categories: body.categories || [],
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
 
-    console.log('💾 Guardando en Firestore:', brandData)
+    console.log('📦 Brand data preparado:', brandData)
+
+    // Verificar si ya existe una marca con el mismo nombre
+    const existingBrands = await getDocs(
+      query(collection(db, 'brands'), where('name', '==', body.name))
+    )
+
+    if (!existingBrands.empty) {
+      console.log('⚠️ Marca ya existe:', body.name)
+      return NextResponse.json(
+        { success: false, error: 'Ya existe una marca con este nombre' },
+        { status: 409 }
+      )
+    }
 
     // Guardar en Firestore
     const brandsRef = collection(db, 'brands')
@@ -169,8 +200,10 @@ export async function PUT(request: NextRequest) {
   try {
     console.log('🔄 API PUT /api/brands iniciado')
     
-    if (!db) {
-      console.error('❌ Firebase no configurado')
+    const db = getFirestore()
+    
+    if (!checkFirebaseAvailability()) {
+      console.error('❌ Firebase no está disponible en PUT')
       return NextResponse.json(
         { success: false, error: 'Firebase no está configurado' },
         { status: 503 }
@@ -263,8 +296,10 @@ export async function PUT(request: NextRequest) {
 // DELETE - Eliminar marca completamente
 export async function DELETE(request: NextRequest) {
   try {
-    if (!db) {
-      console.error('❌ Firebase no configurado en DELETE')
+    const db = getFirestore()
+    
+    if (!checkFirebaseAvailability()) {
+      console.error('❌ Firebase no está disponible en DELETE')
       return NextResponse.json(
         { success: false, error: 'Firebase no está configurado' },
         { status: 503 }

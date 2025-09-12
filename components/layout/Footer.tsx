@@ -35,7 +35,7 @@ export default function Footer() {
             {/* Redes sociales */}
             <div className="flex space-x-4">
               <a
-                href="https://www.facebook.com/profile.php?id=61557201904328"
+                href="facebook.com/profile.php?id=100063726721702"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-300 hover:text-light-green transition-colors duration-200 dark:text-gray-400 dark:hover:text-light-green"

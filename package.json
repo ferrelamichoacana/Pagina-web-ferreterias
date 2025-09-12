@@ -21,6 +21,8 @@
     "migrate-brands-complete": "npx ts-node --project tsconfig.node.json scripts/migrate-brands-complete.ts",
     "migrate-brands-local": "npx ts-node --project tsconfig.node.json scripts/migrate-brands-local.ts",
     "verify-brands": "npx ts-node --project tsconfig.node.json scripts/verify-brands.ts",
+    "create-indexes": "npx ts-node --project tsconfig.node.json scripts/create-firestore-indexes.ts",
+    "show-indexes": "node scripts/firestore-indexes-info.js",
     "upload-logos": "node scripts/upload-logos-cloudinary.js",
     "create-admin": "node scripts/create-admin-user.js",
     "setup-firestore": "npm run migrate-branches && npm run migrate-brands && npm run create-admin",

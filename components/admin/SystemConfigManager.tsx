@@ -316,7 +316,7 @@ export default function SystemConfigManager() {
                   value={formData.socialMedia.facebook}
                   onChange={handleInputChange}
                   className="input-field"
-                  placeholder="https://facebook.com/ferreterialamichoacana"
+                  placeholder="https://www.facebook.com/profile.php?id=100063726721702"
                 />
               </div>
 
