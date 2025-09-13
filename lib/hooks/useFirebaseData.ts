@@ -80,17 +80,17 @@ export function useBrands() {
     console.log('🔄 Iniciando useBrands hook')
     
     // Verificar disponibilidad de Firebase
-    const firebaseStatus = checkFirebaseAvailability()
-    console.log('🔥 Firebase status:', firebaseStatus)
+    const isFirebaseAvailable = checkFirebaseAvailability()
+    console.log('🔥 Firebase status:', isFirebaseAvailable)
     
-    if (!firebaseStatus.available || !firebaseStatus.db) {
+    if (!isFirebaseAvailable) {
       console.error('❌ Firebase no configurado')
       setError('Firebase no está configurado')
       setLoading(false)
       return
     }
 
-    const db = firebaseStatus.db
+    const db = getFirestore()
 
     const unsubscribe = onSnapshot(
       collection(db, 'brands'), // Query simple sin orderBy para evitar el índice compuesto
