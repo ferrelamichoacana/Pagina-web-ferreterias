@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { useBrands } from '@/lib/hooks/useFirebaseData'
 import { uploadWithPreset } from '@/lib/utils/cloudinary'
 import FirebaseConnectionTest from './FirebaseConnectionTest'
@@ -23,8 +23,8 @@ export default function BrandsManager() {
   const { brands, loading, error, refetch } = useBrands()
   
   // Debug: Log para entender el estado de Firebase
-  console.log('🔍 BrandsManager Debug:', {
-    brands,
+  console.log('🔍 BrandsManager RENDER:', {
+    brands: brands?.map(b => ({ id: b.id, name: b.name })) || [],
     brandsCount: brands?.length || 0,
     loading,
     error,
@@ -33,11 +33,29 @@ export default function BrandsManager() {
   
   // Usar solo datos de Firebase, sin fallback mock
   const displayBrands = brands || []
+  console.log('📊 DisplayBrands:', displayBrands.map(b => ({ id: b.id, name: b.name })))
+  
+  // Agregar useEffect para monitorear cambios en brands
+  useEffect(() => {
+    console.log('🔄 BRANDS CAMBIARON:', {
+      newCount: brands?.length || 0,
+      brands: brands?.map(b => ({ id: b.id, name: b.name })) || [],
+      timestamp: new Date().toISOString()
+    })
+  }, [brands])
   const [showForm, setShowForm] = useState(false)
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [dragActive, setDragActive] = useState(false)
+
+  console.log('🎛️  Estados del componente:', {
+    showForm,
+    editingBrand: editingBrand?.id || null,
+    isSubmitting,
+    uploadingImage,
+    dragActive
+  })
 
   const [formData, setFormData] = useState({
     name: '',
@@ -269,33 +287,84 @@ export default function BrandsManager() {
   }
 
   const handleDelete = async (brandId: string, brandName: string) => {
+    console.log('🚀 INICIO handleDelete:', { brandId, brandName, timestamp: new Date().toISOString() })
+    
     if (window.confirm(`¿Estás seguro de que quieres eliminar la marca "${brandName}"?`)) {
+      console.log('✅ Usuario confirmó eliminación')
+      
       try {
         console.log(`🗑️  Iniciando eliminación de marca: ${brandName} (${brandId})`)
+        console.log('📊 Estado inicial:', {
+          totalBrands: brands.length,
+          brandExists: brands.find(b => b.id === brandId),
+          loading,
+          error
+        })
         
-        const response = await fetch(`/api/brands?id=${brandId}`, {
-          method: 'DELETE'
+        const deleteUrl = `/api/brands?id=${brandId}`
+        console.log('🌐 URL de eliminación:', deleteUrl)
+        
+        const response = await fetch(deleteUrl, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
         })
 
-        console.log('📡 Respuesta del servidor:', response.status, response.statusText)
+        console.log('📡 Respuesta del servidor recibida:', {
+          status: response.status,
+          statusText: response.statusText,
+          ok: response.ok,
+          headers: Object.fromEntries(response.headers.entries())
+        })
 
         if (!response.ok) {
-          const error = await response.json()
-          console.error('❌ Error del servidor:', error)
+          const errorText = await response.text()
+          console.error('❌ Error del servidor (texto):', errorText)
+          
+          let error
+          try {
+            error = JSON.parse(errorText)
+            console.error('❌ Error del servidor (JSON):', error)
+          } catch (e) {
+            console.error('❌ No se pudo parsear error como JSON')
+            error = { error: errorText }
+          }
+          
           throw new Error(error.error || 'Error al eliminar marca')
         }
 
         const result = await response.json()
-        console.log('✅ Marca eliminada:', result)
+        console.log('✅ Respuesta exitosa del servidor:', result)
 
-        // Refrescar datos usando la función refetch en lugar de recargar la página
-        refetch()
+        console.log('🔄 Iniciando refetch de datos...')
+        
+        // Refrescar datos usando la función refetch
+        await refetch()
+        
+        console.log('✅ Refetch completado, nuevo estado:', {
+          totalBrands: brands.length,
+          brandStillExists: brands.find(b => b.id === brandId),
+          loading,
+          error
+        })
         
         alert(`Marca "${brandName}" eliminada exitosamente`)
+        console.log('🎉 Proceso de eliminación completado exitosamente')
+        
       } catch (error) {
-        console.error('💥 Error deleting brand:', error)
+        console.error('💥 Error completo en handleDelete:', {
+          error,
+          message: error instanceof Error ? error.message : 'Error desconocido',
+          stack: error instanceof Error ? error.stack : undefined,
+          brandId,
+          brandName
+        })
         alert(`Error al eliminar la marca: ${error instanceof Error ? error.message : 'Error desconocido'}`)
       }
+    } else {
+      console.log('❌ Usuario canceló la eliminación')
     }
   }
 

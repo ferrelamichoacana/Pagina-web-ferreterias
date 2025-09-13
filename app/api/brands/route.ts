@@ -6,6 +6,7 @@ import {
   updateDoc, 
   deleteDoc,
   doc,
+  getDoc,
   query,
   where,
   orderBy,
@@ -295,8 +296,12 @@ export async function PUT(request: NextRequest) {
 
 // DELETE - Eliminar marca completamente
 export async function DELETE(request: NextRequest) {
+  const startTime = new Date().toISOString()
+  console.log('🚀 DELETE /api/brands INICIADO:', startTime)
+  
   try {
     const db = getFirestore()
+    console.log('✅ Firestore DB obtenido')
     
     if (!checkFirebaseAvailability()) {
       console.error('❌ Firebase no está disponible en DELETE')
@@ -308,33 +313,86 @@ export async function DELETE(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
+    console.log('📋 Parámetros recibidos:', { id, url: request.url })
 
     if (!id) {
+      console.error('❌ ID faltante en request')
       return NextResponse.json(
         { success: false, error: 'ID de marca requerido' },
         { status: 400 }
       )
     }
 
-    console.log(`🗑️  Eliminando marca con ID: ${id}`)
+    console.log(`🗑️  ELIMINANDO marca con ID: ${id}`)
 
-    // Eliminación completa del documento
+    // Verificar si la marca existe antes de eliminar
     const brandRef = doc(db, 'brands', id)
-    await deleteDoc(brandRef)
+    console.log('📄 Referencia creada:', brandRef.path)
+    
+    try {
+      const brandDoc = await getDoc(brandRef)
+      console.log('📖 Documento verificado:', {
+        exists: brandDoc.exists(),
+        id: brandDoc.id,
+        data: brandDoc.exists() ? brandDoc.data() : null
+      })
+      
+      if (!brandDoc.exists()) {
+        console.warn('⚠️  Marca no encontrada:', id)
+        return NextResponse.json(
+          { success: false, error: 'Marca no encontrada' },
+          { status: 404 }
+        )
+      }
+      
+      // Eliminación completa del documento
+      console.log('🔥 Ejecutando deleteDoc...')
+      await deleteDoc(brandRef)
+      console.log('✅ deleteDoc ejecutado exitosamente')
 
-    console.log(`✅ Marca ${id} eliminada exitosamente`)
+      console.log(`🎉 Marca ${id} eliminada exitosamente en ${new Date().toISOString()}`)
 
-    return NextResponse.json({
-      success: true,
-      message: 'Marca eliminada exitosamente'
-    })
+      const response = {
+        success: true,
+        message: 'Marca eliminada exitosamente',
+        deletedId: id,
+        timestamp: new Date().toISOString()
+      }
+      
+      console.log('📤 Enviando respuesta exitosa:', response)
+      
+      return NextResponse.json(response)
+      
+    } catch (firestoreError) {
+      console.error('💥 Error específico de Firestore:', {
+        error: firestoreError,
+        message: firestoreError instanceof Error ? firestoreError.message : 'Error desconocido',
+        stack: firestoreError instanceof Error ? firestoreError.stack : undefined,
+        id
+      })
+      throw firestoreError
+    }
 
   } catch (error) {
-    console.error('❌ Error deleting brand:', error)
+    const errorTime = new Date().toISOString()
+    console.error('💥 ERROR GENERAL en DELETE:', {
+      error,
+      message: error instanceof Error ? error.message : 'Error desconocido',
+      stack: error instanceof Error ? error.stack : undefined,
+      startTime,
+      errorTime,
+      duration: `${Date.now() - new Date(startTime).getTime()}ms`
+    })
+    
     const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-    return NextResponse.json(
-      { success: false, error: `Error al eliminar marca: ${errorMessage}` },
-      { status: 500 }
-    )
+    const response = {
+      success: false,
+      error: `Error al eliminar marca: ${errorMessage}`,
+      timestamp: errorTime
+    }
+    
+    console.log('📤 Enviando respuesta de error:', response)
+    
+    return NextResponse.json(response, { status: 500 })
   }
 }

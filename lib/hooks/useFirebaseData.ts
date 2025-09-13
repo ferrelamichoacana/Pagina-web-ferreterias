@@ -72,12 +72,30 @@ export function useBrands() {
 
   // Función para forzar una recarga de datos
   const refetch = () => {
-    setRefetchTrigger(prev => prev + 1)
+    console.log('🔄 REFETCH INICIADO:', {
+      timestamp: new Date().toISOString(),
+      currentTrigger: refetchTrigger,
+      newTrigger: refetchTrigger + 1,
+      currentBrands: brands.length,
+      loading
+    })
+    
+    setRefetchTrigger(prev => {
+      const newValue = prev + 1
+      console.log('📈 Trigger actualizado:', { from: prev, to: newValue })
+      return newValue
+    })
+    
     setLoading(true)
+    console.log('⏳ Loading establecido en true')
   }
 
   useEffect(() => {
-    console.log('🔄 Iniciando useBrands hook')
+    console.log('🔄 USEEFFECT useBrands INICIADO:', {
+      refetchTrigger,
+      timestamp: new Date().toISOString(),
+      currentBrands: brands.length
+    })
     
     // Verificar disponibilidad de Firebase
     const isFirebaseAvailable = checkFirebaseAvailability()
@@ -91,19 +109,22 @@ export function useBrands() {
     }
 
     const db = getFirestore()
+    console.log('🗄️  Firestore DB obtenido')
 
     const unsubscribe = onSnapshot(
       collection(db, 'brands'), // Query simple sin orderBy para evitar el índice compuesto
       (snapshot) => {
-        console.log('📥 Snapshot recibido:', {
+        console.log('📥 SNAPSHOT RECIBIDO:', {
           size: snapshot.size,
           empty: snapshot.empty,
-          docs: snapshot.docs.length
+          docs: snapshot.docs.length,
+          timestamp: new Date().toISOString(),
+          refetchTrigger
         })
         
         const brandsData = snapshot.docs.map(doc => {
           const data = doc.data()
-          console.log('📄 Documento:', { id: doc.id, data })
+          console.log('📄 Documento procesado:', { id: doc.id, name: data.name || 'Sin nombre' })
           return {
             id: doc.id,
             ...data,
@@ -113,34 +134,52 @@ export function useBrands() {
         // Ordenar en el cliente para evitar problemas de índice
         brandsData.sort((a, b) => a.name.localeCompare(b.name))
         
-        console.log('✅ Marcas procesadas y ordenadas:', brandsData)
+        console.log('✅ MARCAS PROCESADAS Y ORDENADAS:', {
+          total: brandsData.length,
+          marcas: brandsData.map(b => ({ id: b.id, name: b.name })),
+          timestamp: new Date().toISOString()
+        })
+        
         setBrands(brandsData)
+        console.log('📊 setBrands ejecutado con', brandsData.length, 'marcas')
+        
         setLoading(false)
+        console.log('⏳ Loading establecido en false')
+        
         setError(null)
+        console.log('❌ Error limpiado')
       },
       (err) => {
-        console.error('💥 Error fetching brands:', err)
-        console.error('🔍 Error details:', {
+        console.error('� ERROR EN SNAPSHOT:', {
+          error: err,
           code: err.code,
           message: err.message,
-          stack: err.stack
+          stack: err.stack,
+          timestamp: new Date().toISOString()
         })
         setError(`Error al cargar marcas: ${err.message}`)
         setLoading(false)
       }
     )
 
+    console.log('👂 Listener de Firebase configurado')
+
     return () => {
-      console.log('🧹 Limpiando useBrands subscription')
+      console.log('🧹 LIMPIANDO useBrands subscription:', {
+        refetchTrigger,
+        timestamp: new Date().toISOString()
+      })
       unsubscribe()
     }
-  }, [refetchTrigger]) // Agregar refetchTrigger como dependencia
+  }, [refetchTrigger]) // refetchTrigger es la única dependencia necesaria
 
-  console.log('📊 useBrands estado actual:', {
+  console.log('📊 ESTADO FINAL useBrands:', {
     brandsCount: brands.length,
     loading,
     error,
-    brands: brands.slice(0, 2) // Solo mostrar las primeras 2 para debug
+    brands: brands.slice(0, 3).map(b => ({ id: b.id, name: b.name })), // Solo mostrar las primeras 3 para debug
+    refetchTrigger,
+    timestamp: new Date().toISOString()
   })
 
   return { brands, loading, error, refetch }
