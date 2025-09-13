@@ -25,11 +25,6 @@ const requiredConfig = [
 
 const missingConfig = requiredConfig.filter(key => !firebaseConfig[key as keyof typeof firebaseConfig])
 
-if (missingConfig.length > 0 && typeof window !== 'undefined') {
-  console.error('❌ Firebase: Variables de configuración faltantes:', missingConfig)
-  console.error('   Configura estas variables en tu archivo .env.local o en Vercel')
-}
-
 // Variables para las instancias de Firebase
 let app: FirebaseApp | null = null
 let auth: Auth | null = null  
@@ -37,11 +32,6 @@ let db: Firestore | null = null
 
 // Función para inicializar Firebase de forma segura
 function initializeFirebase(): { app: FirebaseApp | null, auth: Auth | null, db: Firestore | null } {
-  // Solo inicializar en el browser y si tenemos configuración válida
-  if (typeof window === 'undefined') {
-    return { app: null, auth: null, db: null }
-  }
-
   // Si ya está inicializado, devolver las instancias existentes
   if (app && auth && db) {
     return { app, auth, db }
@@ -50,7 +40,18 @@ function initializeFirebase(): { app: FirebaseApp | null, auth: Auth | null, db:
   try {
     // Verificar si tenemos configuración mínima
     if (!firebaseConfig.projectId || !firebaseConfig.apiKey) {
-      console.warn('⚠️  Firebase: Configuración incompleta, usando modo dummy')
+      if (typeof window !== 'undefined') {
+        console.warn('⚠️  Firebase: Configuración incompleta, usando modo dummy')
+      }
+      return { app: null, auth: null, db: null }
+    }
+
+    // Verificar variables faltantes
+    if (missingConfig.length > 0) {
+      if (typeof window !== 'undefined') {
+        console.error('❌ Firebase: Variables de configuración faltantes:', missingConfig)
+        console.error('   Configura estas variables en tu archivo .env.local o en Vercel')
+      }
       return { app: null, auth: null, db: null }
     }
 
@@ -59,13 +60,17 @@ function initializeFirebase(): { app: FirebaseApp | null, auth: Auth | null, db:
     auth = getAuth(app)
     db = getFirestore(app)
 
-    console.log('✅ Firebase inicializado correctamente')
-    console.log(`   📋 Proyecto: ${firebaseConfig.projectId}`)
+    if (typeof window !== 'undefined') {
+      console.log('✅ Firebase inicializado correctamente')
+      console.log(`   📋 Proyecto: ${firebaseConfig.projectId}`)
+    }
     
     return { app, auth, db }
     
   } catch (error) {
-    console.error('❌ Error inicializando Firebase:', error)
+    if (typeof window !== 'undefined') {
+      console.error('❌ Error inicializando Firebase:', error)
+    }
     return { app: null, auth: null, db: null }
   }
 }

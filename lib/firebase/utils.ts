@@ -5,13 +5,53 @@
 
 import { Firestore } from 'firebase/firestore'
 import { Auth } from 'firebase/auth'
-import { db, auth, isFirebaseConfigured } from '../firebase'
+
+// Importar tanto client como server side Firebase
+let db: Firestore | null = null
+let auth: Auth | null = null
+let isFirebaseConfigured: () => boolean
+
+// Detectar si estamos en el servidor o cliente y usar la configuración apropiada
+if (typeof window === 'undefined') {
+  // Servidor - usar configuración de servidor
+  try {
+    const firebaseServer = require('../firebase-server')
+    db = firebaseServer.db
+    auth = firebaseServer.auth
+    isFirebaseConfigured = firebaseServer.isFirebaseConfigured
+  } catch (error) {
+    console.error('Error importing server Firebase:', error)
+    isFirebaseConfigured = () => false
+  }
+} else {
+  // Cliente - usar configuración de cliente
+  try {
+    const firebaseClient = require('../firebase')
+    db = firebaseClient.db
+    auth = firebaseClient.auth
+    isFirebaseConfigured = firebaseClient.isFirebaseConfigured
+  } catch (error) {
+    console.error('Error importing client Firebase:', error)
+    isFirebaseConfigured = () => false
+  }
+}
 
 /**
  * Obtiene la instancia de Firestore garantizando que esté configurada
  * @throws Error si Firebase no está configurado
  */
 export function getFirestore(): Firestore {
+  // En server-side, reinicializar dinámicamente si es necesario
+  if (typeof window === 'undefined') {
+    try {
+      const firebaseServer = require('../firebase-server')
+      const { db: serverDb } = firebaseServer.getFirebaseInstances()
+      return serverDb
+    } catch (error) {
+      throw new Error('Firebase no está configurado en el servidor. Verifica las variables de entorno.')
+    }
+  }
+  
   if (!isFirebaseConfigured() || !db) {
     throw new Error('Firebase no está configurado. Verifica las variables de entorno.')
   }
@@ -23,6 +63,17 @@ export function getFirestore(): Firestore {
  * @throws Error si Firebase no está configurado
  */
 export function getAuth(): Auth {
+  // En server-side, reinicializar dinámicamente si es necesario
+  if (typeof window === 'undefined') {
+    try {
+      const firebaseServer = require('../firebase-server')
+      const { auth: serverAuth } = firebaseServer.getFirebaseInstances()
+      return serverAuth
+    } catch (error) {
+      throw new Error('Firebase no está configurado en el servidor. Verifica las variables de entorno.')
+    }
+  }
+  
   if (!isFirebaseConfigured() || !auth) {
     throw new Error('Firebase no está configurado. Verifica las variables de entorno.')
   }
@@ -32,7 +83,26 @@ export function getAuth(): Auth {
 /**
  * Verifica si Firebase está disponible sin lanzar errores
  */
-export function checkFirebaseAvailability(): { 
+export function checkFirebaseAvailability(): boolean {
+  try {
+    if (typeof window === 'undefined') {
+      // Server-side check
+      const firebaseServer = require('../firebase-server')
+      return firebaseServer.isFirebaseConfigured()
+    } else {
+      // Client-side check
+      return isFirebaseConfigured && isFirebaseConfigured()
+    }
+  } catch (error) {
+    console.error('Error checking Firebase availability:', error)
+    return false
+  }
+}
+
+/**
+ * Verifica si Firebase está disponible y retorna información detallada
+ */
+export function getFirebaseStatus(): { 
   available: boolean, 
   db: Firestore | null, 
   auth: Auth | null,

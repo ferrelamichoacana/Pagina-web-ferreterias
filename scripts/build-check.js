@@ -5,6 +5,13 @@
  * antes del build de producción
  */
 
+// Cargar variables de entorno desde .env.local
+try {
+  require('dotenv').config({ path: '.env.local' })
+} catch (error) {
+  console.warn('dotenv no está disponible, continuando sin cargar .env.local')
+}
+
 const requiredEnvVars = [
   'NEXT_PUBLIC_FIREBASE_API_KEY',
   'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
