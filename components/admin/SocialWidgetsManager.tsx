@@ -3,11 +3,12 @@
 import React, { useState } from 'react'
 import { useSocialWidgets } from '@/lib/hooks/useFirebaseData'
 import { SocialWidget } from '@/types'
-import { PlusIcon, TrashIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, TrashIcon, EyeIcon, EyeSlashIcon, PencilIcon } from '@heroicons/react/24/outline'
 
 export default function SocialWidgetsManager() {
   const { widgets, loading, error } = useSocialWidgets()
   const [isEditing, setIsEditing] = useState(false)
+  const [editingWidget, setEditingWidget] = useState<SocialWidget | null>(null)
   const [newWidget, setNewWidget] = useState({
     type: 'facebook' as 'facebook' | 'instagram',
     url: '',
@@ -19,29 +20,80 @@ export default function SocialWidgetsManager() {
     e.preventDefault()
     
     try {
-      const response = await fetch('/api/social-widgets', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newWidget)
-      })
-
-      if (response.ok) {
-        setNewWidget({
-          type: 'facebook',
-          url: '',
-          position: 1,
-          active: true
+      if (editingWidget) {
+        // Actualizar widget existente
+        const response = await fetch('/api/social-widgets', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id: editingWidget.id,
+            ...newWidget
+          })
         })
-        setIsEditing(false)
+
+        if (response.ok) {
+          setEditingWidget(null)
+          setNewWidget({
+            type: 'facebook',
+            url: '',
+            position: 1,
+            active: true
+          })
+          setIsEditing(false)
+        } else {
+          const errorData = await response.json()
+          alert(`Error: ${errorData.error}`)
+        }
       } else {
-        const errorData = await response.json()
-        alert(`Error: ${errorData.error}`)
+        // Crear nuevo widget
+        const response = await fetch('/api/social-widgets', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(newWidget)
+        })
+
+        if (response.ok) {
+          setNewWidget({
+            type: 'facebook',
+            url: '',
+            position: 1,
+            active: true
+          })
+          setIsEditing(false)
+        } else {
+          const errorData = await response.json()
+          alert(`Error: ${errorData.error}`)
+        }
       }
     } catch (error) {
-      alert('Error al crear el widget')
+      alert('Error al guardar el widget')
     }
+  }
+
+  const startEdit = (widget: SocialWidget) => {
+    setEditingWidget(widget)
+    setNewWidget({
+      type: widget.type,
+      url: widget.url,
+      position: widget.position,
+      active: widget.active
+    })
+    setIsEditing(true)
+  }
+
+  const cancelEdit = () => {
+    setEditingWidget(null)
+    setNewWidget({
+      type: 'facebook',
+      url: '',
+      position: 1,
+      active: true
+    })
+    setIsEditing(false)
   }
 
   const toggleActive = async (widget: SocialWidget) => {
@@ -72,12 +124,8 @@ export default function SocialWidgetsManager() {
     }
 
     try {
-      const response = await fetch('/api/social-widgets', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: widgetId })
+      const response = await fetch(`/api/social-widgets?id=${widgetId}`, {
+        method: 'DELETE'
       })
 
       if (!response.ok) {
@@ -123,10 +171,12 @@ export default function SocialWidgetsManager() {
         </button>
       </div>
 
-      {/* Formulario de creación */}
+      {/* Formulario de creación/edición */}
       {isEditing && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold mb-4">Nuevo Widget Social</h3>
+          <h3 className="text-lg font-semibold mb-4">
+            {editingWidget ? 'Editar Widget Social' : 'Nuevo Widget Social'}
+          </h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -192,11 +242,11 @@ export default function SocialWidgetsManager() {
                 type="submit"
                 className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700"
               >
-                Crear Widget
+                {editingWidget ? 'Actualizar Widget' : 'Crear Widget'}
               </button>
               <button
                 type="button"
-                onClick={() => setIsEditing(false)}
+                onClick={cancelEdit}
                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
               >
                 Cancelar
@@ -246,6 +296,14 @@ export default function SocialWidgetsManager() {
                     ) : (
                       <EyeSlashIcon className="h-5 w-5" />
                     )}
+                  </button>
+                  
+                  <button
+                    onClick={() => startEdit(widget)}
+                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                    title="Editar"
+                  >
+                    <PencilIcon className="h-5 w-5" />
                   </button>
                   
                   <button
