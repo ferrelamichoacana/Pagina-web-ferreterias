@@ -209,18 +209,18 @@ export default function SocialWidgetsManager() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                URL del Post/Reel
+                URL del Post/Reel o Iframe
               </label>
-              <input
-                type="url"
+              <textarea
                 value={newWidget.url}
                 onChange={(e) => setNewWidget({ ...newWidget, url: e.target.value })}
-                placeholder="https://www.facebook.com/..."
+                placeholder="https://www.facebook.com/reel/... o <iframe src=..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                rows={3}
                 required
               />
               <p className="text-sm text-gray-500 mt-1">
-                Pega la URL completa del post de Facebook o Instagram
+                Acepta URLs de Facebook o código iframe completo
               </p>
             </div>
 
@@ -334,10 +334,12 @@ export default function SocialWidgetsManager() {
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h4 className="font-medium text-blue-900 mb-2">💡 Consejos de uso</h4>
         <ul className="text-sm text-blue-800 space-y-1">
-          <li>• Los widgets aparecen en posiciones fijas en la página principal</li>
-          <li>• Se activan con animaciones cuando el usuario hace scroll</li>
-          <li>• Recomendamos máximo 3-5 widgets para no sobrecargar la página</li>
-          <li>• Los URLs deben ser públicos para que se puedan mostrar correctamente</li>
+          <li>• Los widgets se mueven junto con el scroll de la página</li>
+          <li>• Se activan con animaciones cuando aparecen en pantalla</li>
+          <li>• Acepta URLs directas: <code>https://www.facebook.com/reel/123...</code></li>
+          <li>• También acepta código iframe completo de Facebook</li>
+          <li>• Para obtener iframe: Ve al reel → "..." → "Insertar" → copia el código</li>
+          <li>• Los widgets solo aparecen en pantallas medianas y grandes</li>
         </ul>
       </div>
     </div>

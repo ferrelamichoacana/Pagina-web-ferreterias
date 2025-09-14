@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { FacebookEmbed } from 'react-social-media-embed'
 import { useSocialWidgets } from '@/lib/hooks/useFirebaseData'
 
 interface SocialWidgetProps {
@@ -17,7 +16,6 @@ interface SocialWidgetProps {
 
 const SocialWidgetItem: React.FC<SocialWidgetProps> = ({ widget, index }) => {
   const [isVisible, setIsVisible] = useState(false)
-  const [hasError, setHasError] = useState(false)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -47,33 +45,62 @@ const SocialWidgetItem: React.FC<SocialWidgetProps> = ({ widget, index }) => {
     }
   }, [widget.id, index])
 
-  // Posiciones distribuidas estratégicamente en la página
+  // Función para extraer el ID del reel de Facebook
+  const extractFacebookReelId = (url: string) => {
+    const reelMatch = url.match(/facebook\.com\/reel\/(\d+)/)
+    return reelMatch ? reelMatch[1] : null
+  }
+
+  // Función para extraer URL del iframe si es código HTML
+  const extractIframeUrl = (content: string) => {
+    const iframeMatch = content.match(/src="([^"]*)"/)
+    return iframeMatch ? iframeMatch[1] : null
+  }
+
+  // Generar iframe URL para Facebook
+  const getFacebookIframeUrl = (input: string) => {
+    // Si ya es un iframe, extraer la URL
+    if (input.includes('<iframe')) {
+      const extractedUrl = extractIframeUrl(input)
+      return extractedUrl
+    }
+    
+    // Si es una URL directa, generar el iframe
+    const reelId = extractFacebookReelId(input)
+    if (reelId) {
+      return `https://www.facebook.com/plugins/video.php?height=476&href=${encodeURIComponent(input)}&show_text=false&width=267&t=0`
+    }
+    
+    return null
+  }
+
+  // Posiciones distribuidas a lo largo del contenido
   const getPositionStyles = () => {
     const positions = [
       { 
         left: '2rem',
-        top: '20vh',
+        top: '600px',
         className: 'left-8'
       },
       { 
         right: '2rem',
-        top: '35vh',
+        top: '1200px',
         className: 'right-8'
       },
       { 
         left: '50%',
-        top: '50vh',
+        top: '1800px',
         transform: 'translateX(-50%)',
         className: 'left-1/2 transform -translate-x-1/2'
       },
       { 
         right: '3rem',
-        top: '65vh',
+        top: '2400px',
         className: 'right-12'
       },
       { 
         left: '3rem',
-        top: '80vh',
+        top: '3000px',
         className: 'left-12'
       }
     ]
@@ -81,13 +108,14 @@ const SocialWidgetItem: React.FC<SocialWidgetProps> = ({ widget, index }) => {
   }
 
   const positionStyles = getPositionStyles()
+  const iframeUrl = getFacebookIframeUrl(widget.url)
 
   return (
     <div
       id={`social-widget-${widget.id}`}
       className={`
         social-widget social-widget-${(index % 5) + 1}
-        fixed z-10 transition-all duration-1000 ease-out
+        absolute z-10 transition-all duration-1000 ease-out
         ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}
         hover:scale-105 hover:z-20
         w-72 max-w-[85vw] md:w-80
@@ -100,32 +128,34 @@ const SocialWidgetItem: React.FC<SocialWidgetProps> = ({ widget, index }) => {
       }}
     >
       <div className="bg-white rounded-xl shadow-2xl p-3 border-2 border-gray-100 hover:shadow-3xl transition-shadow duration-300">
-        {!hasError ? (
-          <>
-            {widget.type === 'facebook' && (
-              <div className="overflow-hidden rounded-lg">
-                <FacebookEmbed
-                  url={widget.url}
-                  width="100%"
-                  height={350}
-                  onError={() => setHasError(true)}
-                />
-              </div>
-            )}
-            
-            {/* Badge de posición */}
-            <div className="absolute -top-2 -right-2 bg-primary-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold shadow-lg">
-              {widget.position}
-            </div>
-          </>
+        {iframeUrl ? (
+          <div className="overflow-hidden rounded-lg">
+            <iframe
+              src={iframeUrl}
+              width="267"
+              height="476"
+              style={{
+                border: 'none',
+                overflow: 'hidden',
+                width: '100%',
+                maxWidth: '267px',
+                height: '476px'
+              }}
+              scrolling="no"
+              frameBorder="0"
+              allowFullScreen={true}
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+              title={`Facebook Reel ${widget.position}`}
+            />
+          </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-80 text-gray-500">
+          <div className="flex flex-col items-center justify-center h-96 text-gray-500">
             <div className="text-4xl mb-4">📱</div>
             <p className="text-center text-sm">
-              No se pudo cargar el contenido
+              URL de Facebook no válida
             </p>
             <p className="text-center text-xs mt-2 text-gray-400">
-              Verifica que la URL sea pública
+              Verifica el formato de la URL
             </p>
             <a 
               href={widget.url} 
@@ -137,6 +167,11 @@ const SocialWidgetItem: React.FC<SocialWidgetProps> = ({ widget, index }) => {
             </a>
           </div>
         )}
+        
+        {/* Badge de posición */}
+        <div className="absolute -top-2 -right-2 bg-primary-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold shadow-lg">
+          {widget.position}
+        </div>
       </div>
     </div>
   )
@@ -159,14 +194,15 @@ export default function SocialWidgets() {
 
   return (
     <>
-      {/* Solo mostrar en pantallas medianas y grandes */}
-      <div className="hidden md:block">
+      {/* Contenedor con posición relativa para que los widgets se muevan con el scroll */}
+      <div className="relative w-full pointer-events-none hidden md:block" style={{ minHeight: '3500px' }}>
         {widgets.map((widget, index) => (
-          <SocialWidgetItem
-            key={widget.id}
-            widget={widget}
-            index={index}
-          />
+          <div key={widget.id} className="pointer-events-auto">
+            <SocialWidgetItem
+              widget={widget}
+              index={index}
+            />
+          </div>
         ))}
       </div>
       
