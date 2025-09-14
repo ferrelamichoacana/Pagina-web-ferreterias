@@ -40,7 +40,7 @@ if (typeof window === 'undefined') {
  * Obtiene la instancia de Firestore garantizando que esté configurada
  * @throws Error si Firebase no está configurado
  */
-export function getFirestore(): Firestore {
+export function getFirebaseFirestore(): Firestore {
   // En server-side, reinicializar dinámicamente si es necesario
   if (typeof window === 'undefined') {
     try {
@@ -58,11 +58,14 @@ export function getFirestore(): Firestore {
   return db
 }
 
+// Mantener backward compatibility
+export const getFirestore = getFirebaseFirestore
+
 /**
  * Obtiene la instancia de Auth garantizando que esté configurada
  * @throws Error si Firebase no está configurado
  */
-export function getAuth(): Auth {
+export function getFirebaseAuth(): Auth {
   // En server-side, reinicializar dinámicamente si es necesario
   if (typeof window === 'undefined') {
     try {
@@ -79,6 +82,9 @@ export function getAuth(): Auth {
   }
   return auth
 }
+
+// Mantener backward compatibility
+export const getAuth = getFirebaseAuth
 
 /**
  * Verifica si Firebase está disponible sin lanzar errores
