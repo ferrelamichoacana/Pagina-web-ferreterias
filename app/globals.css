@@ -28,6 +28,43 @@
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --text-primary: #1f2937;
+
+/* Animaciones para widgets sociales */
+@keyframes socialWidgetFloat {
+  0%, 100% { transform: translateY(0px) rotate(var(--widget-rotation, 0deg)); }
+  50% { transform: translateY(-10px) rotate(var(--widget-rotation, 0deg)); }
+}
+
+@keyframes socialWidgetPulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); }
+  50% { box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15); }
+}
+
+@keyframes socialWidgetSlideIn {
+  0% { 
+    opacity: 0; 
+    transform: translateY(30px) scale(0.8) rotate(var(--widget-rotation, 0deg)); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0px) scale(1) rotate(var(--widget-rotation, 0deg)); 
+  }
+}
+
+/* Clases para widgets sociales */
+.social-widget {
+  animation: socialWidgetSlideIn 0.8s ease-out forwards;
+}
+
+.social-widget:hover {
+  animation: socialWidgetFloat 3s ease-in-out infinite, socialWidgetPulse 2s ease-in-out infinite;
+}
+
+.social-widget-1 { --widget-rotation: 2deg; }
+.social-widget-2 { --widget-rotation: -2deg; }
+.social-widget-3 { --widget-rotation: 1deg; }
+.social-widget-4 { --widget-rotation: -3deg; }
+.social-widget-5 { --widget-rotation: 3deg; }
   --text-secondary: #6b7280;
   --border-color: #e5e7eb;
 }

@@ -12,6 +12,7 @@ import UsersManager from './UsersManager'
 import FileManagementPage from './FileManagementPage'
 import FirebaseDebugger from './FirebaseDebugger'
 import FirebaseSetup from './FirebaseSetup'
+import SocialWidgetsManager from './SocialWidgetsManager'
 import { 
   BuildingStorefrontIcon,
   TagIcon,
@@ -20,7 +21,8 @@ import {
   ChartBarIcon,
   DocumentTextIcon,
   WrenchScrewdriverIcon,
-  FireIcon
+  FireIcon,
+  DevicePhoneMobileIcon
 } from '@heroicons/react/24/outline'
 
 export default function AdminDashboard() {
@@ -78,6 +80,12 @@ export default function AdminDashboard() {
       description: 'Gestionar contenido web'
     },
     {
+      id: 'social-widgets',
+      name: 'Redes Sociales',
+      icon: DevicePhoneMobileIcon,
+      description: 'Gestionar widgets de Facebook/Instagram'
+    },
+    {
       id: 'files',
       name: 'Archivos',
       icon: DocumentTextIcon,
@@ -111,6 +119,8 @@ export default function AdminDashboard() {
         return <SystemConfigManager />
       case 'content':
         return <ContentManager />
+      case 'social-widgets':
+        return <SocialWidgetsManager />
       case 'files':
         return <FileManagementPage />
       case 'debug':

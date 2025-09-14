@@ -20,7 +20,8 @@ import type {
   User,
   ContactRequest,
   JobPosting,
-  ITTicket 
+  ITTicket,
+  SocialWidget 
 } from '@/types'
 
 // Hook para obtener sucursales desde Firebase
@@ -354,6 +355,56 @@ export function useITTickets() {
   }, [])
 
   return { tickets, loading, error }
+}
+
+// Hook para obtener widgets sociales
+export function useSocialWidgets() {
+  const [widgets, setWidgets] = useState<SocialWidget[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [refetchTrigger, setRefetchTrigger] = useState(0)
+
+  // Función para forzar una recarga de datos
+  const refetch = () => {
+    setRefetchTrigger(prev => prev + 1)
+    setLoading(true)
+  }
+
+  useEffect(() => {
+    // Verificar disponibilidad de Firebase
+    if (!checkFirebaseAvailability()) {
+      setError('Firebase no está configurado')
+      setLoading(false)
+      return
+    }
+
+    const db = getFirestore()
+
+    const unsubscribe = onSnapshot(
+      query(collection(db, 'socialWidgets'), orderBy('position')),
+      (snapshot) => {
+        const widgetsData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          createdAt: doc.data().createdAt?.toDate() || new Date(),
+          updatedAt: doc.data().updatedAt?.toDate() || new Date(),
+        })) as SocialWidget[]
+        
+        setWidgets(widgetsData.filter(w => w.active))
+        setLoading(false)
+        setError(null)
+      },
+      (err) => {
+        console.error('Error loading social widgets:', err.message)
+        setError(`Error al cargar widgets sociales: ${err.message}`)
+        setLoading(false)
+      }
+    )
+
+    return () => unsubscribe()
+  }, [refetchTrigger])
+
+  return { widgets, loading, error, refetch }
 }
 
 // Hook para obtener un documento específico por ID

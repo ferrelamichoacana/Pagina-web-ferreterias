@@ -180,3 +180,13 @@ export interface NewsletterSubscriber {
   subscribedAt: Date
   unsubscribedAt?: Date
 }
+
+export interface SocialWidget {
+  id: string
+  type: 'facebook' | 'instagram'
+  url: string
+  position: number
+  active: boolean
+  createdAt: Date
+  updatedAt: Date
+}
