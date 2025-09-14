@@ -14,6 +14,8 @@ interface MaintenancePageProps {
   title?: string
   message?: string
   showBackButton?: boolean
+  backButtonHref?: string
+  backButtonLabel?: string
   estimatedTime?: string
   contactInfo?: boolean
 }
@@ -22,6 +24,8 @@ export default function MaintenancePage({
   title,
   message,
   showBackButton = true,
+  backButtonHref = "/",
+  backButtonLabel,
   estimatedTime,
   contactInfo = true
 }: MaintenancePageProps) {
@@ -104,11 +108,11 @@ export default function MaintenancePage({
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
           {showBackButton && (
             <Link
-              href="/"
+              href={backButtonHref}
               className="btn-primary inline-flex items-center space-x-2 px-6 py-3"
             >
               <HomeIcon className="w-5 h-5" />
-              <span>{texts.backHome}</span>
+              <span>{backButtonLabel || texts.backHome}</span>
             </Link>
           )}
           

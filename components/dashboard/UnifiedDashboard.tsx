@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/auth/AuthProvider'
 import { useLanguage } from '@/lib/i18n/LanguageProvider'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import BackButton from '@/components/ui/BackButton'
 import Link from 'next/link'
 import { 
   UserCircleIcon,
@@ -138,6 +139,11 @@ export default function UnifiedDashboard() {
       
       <main className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Botón de regresar */}
+          <div className="mb-8">
+            <BackButton href="/" label="Regresar al Inicio" />
+          </div>
+
           {/* Bienvenida */}
           <div className="text-center mb-12">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">

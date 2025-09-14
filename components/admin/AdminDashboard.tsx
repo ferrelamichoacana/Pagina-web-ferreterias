@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useAuth } from '@/lib/auth/AuthProvider'
 import { useLanguage } from '@/lib/i18n/LanguageProvider'
 import MaintenancePage from '@/components/ui/MaintenancePage'
+import BackButton from '@/components/ui/BackButton'
 import BranchesManager from './BranchesManager'
 import BrandsManager from './BrandsManager'
 import SystemConfigManager from './SystemConfigManager'
@@ -147,6 +148,11 @@ export default function AdminDashboard() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Botón de regresar */}
+        <div className="mb-6">
+          <BackButton href="/dashboard" label="Regresar al Dashboard" />
+        </div>
+
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar de navegación */}
           <div className="lg:w-64 flex-shrink-0">

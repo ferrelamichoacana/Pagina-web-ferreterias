@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/auth/AuthProvider'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import MaintenancePage from '@/components/ui/MaintenancePage'
+import BackButton from '@/components/ui/BackButton'
 import QuotationViewer from '@/components/quotations/QuotationViewer'
 import QuotationBuilder from '@/components/quotations/QuotationBuilder'
 import { 
@@ -233,6 +234,11 @@ export default function QuotationsPage() {
       <Header />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Botón de regresar */}
+        <div className="mb-6">
+          <BackButton href="/dashboard/vendedor" label="Regresar al Panel de Vendedor" />
+        </div>
+
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">

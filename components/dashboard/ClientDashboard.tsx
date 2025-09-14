@@ -7,6 +7,7 @@ import { useContactRequests } from '@/lib/hooks/useFirebaseData'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import MaintenancePage from '@/components/ui/MaintenancePage'
+import BackButton from '@/components/ui/BackButton'
 import { 
   DocumentTextIcon,
   ClockIcon,
@@ -122,6 +123,11 @@ export default function ClientDashboard() {
       <Header />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Botón de regresar */}
+        <div className="mb-6">
+          <BackButton href="/dashboard" label="Regresar al Dashboard" />
+        </div>
+
         {/* Header del dashboard */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
