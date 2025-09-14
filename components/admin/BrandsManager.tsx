@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useBrands } from '@/lib/hooks/useFirebaseData'
 import { uploadWithPreset } from '@/lib/utils/cloudinary'
-import FirebaseConnectionTest from './FirebaseConnectionTest'
 import FirebaseStatusIndicator from './FirebaseStatusIndicator'
 import VercelEnvTest from './VercelEnvTest'
 import FirebaseDebugConsole from './FirebaseDebugConsole'
@@ -459,9 +458,6 @@ export default function BrandsManager() {
 
       {/* Estado de Firebase */}
       <FirebaseStatusIndicator />
-
-      {/* Test de conexión Firebase */}
-      <FirebaseConnectionTest />
 
       {/* Formulario */}
       {showForm && (
