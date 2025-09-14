@@ -91,11 +91,7 @@ export function useBrands() {
   }
 
   useEffect(() => {
-    console.log('🔄 USEEFFECT useBrands INICIADO:', {
-      refetchTrigger,
-      timestamp: new Date().toISOString(),
-      currentBrands: brands.length
-    })
+    console.log('🔄 useBrands iniciado:', refetchTrigger)
     
     // Verificar disponibilidad de Firebase
     const isFirebaseAvailable = checkFirebaseAvailability()
@@ -122,32 +118,19 @@ export function useBrands() {
           refetchTrigger
         })
         
-        const brandsData = snapshot.docs.map(doc => {
-          const data = doc.data()
-          console.log('📄 Documento procesado:', { id: doc.id, name: data.name || 'Sin nombre' })
-          return {
-            id: doc.id,
-            ...data,
-          }
-        }) as Brand[]
+        const brandsData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Brand[]
         
         // Ordenar en el cliente para evitar problemas de índice
         brandsData.sort((a, b) => a.name.localeCompare(b.name))
         
-        console.log('✅ MARCAS PROCESADAS Y ORDENADAS:', {
-          total: brandsData.length,
-          marcas: brandsData.map(b => ({ id: b.id, name: b.name })),
-          timestamp: new Date().toISOString()
-        })
+        console.log('✅ MARCAS CARGADAS:', brandsData.length)
         
         setBrands(brandsData)
-        console.log('📊 setBrands ejecutado con', brandsData.length, 'marcas')
-        
         setLoading(false)
-        console.log('⏳ Loading establecido en false')
-        
         setError(null)
-        console.log('❌ Error limpiado')
       },
       (err) => {
         console.error('� ERROR EN SNAPSHOT:', {
@@ -172,15 +155,6 @@ export function useBrands() {
       unsubscribe()
     }
   }, [refetchTrigger]) // refetchTrigger es la única dependencia necesaria
-
-  console.log('📊 ESTADO FINAL useBrands:', {
-    brandsCount: brands.length,
-    loading,
-    error,
-    brands: brands.slice(0, 3).map(b => ({ id: b.id, name: b.name })), // Solo mostrar las primeras 3 para debug
-    refetchTrigger,
-    timestamp: new Date().toISOString()
-  })
 
   return { brands, loading, error, refetch }
 }

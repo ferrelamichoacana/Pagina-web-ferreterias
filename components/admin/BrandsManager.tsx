@@ -22,40 +22,18 @@ import type { Brand } from '@/types'
 export default function BrandsManager() {
   const { brands, loading, error, refetch } = useBrands()
   
-  // Debug: Log para entender el estado de Firebase
-  console.log('🔍 BrandsManager RENDER:', {
-    brands: brands?.map(b => ({ id: b.id, name: b.name })) || [],
-    brandsCount: brands?.length || 0,
-    loading,
-    error,
-    timestamp: new Date().toISOString()
-  })
-  
   // Usar solo datos de Firebase, sin fallback mock
   const displayBrands = brands || []
-  console.log('📊 DisplayBrands:', displayBrands.map(b => ({ id: b.id, name: b.name })))
   
-  // Agregar useEffect para monitorear cambios en brands
+  // Agregar useEffect para monitorear cambios en brands (solo cuando cambia)
   useEffect(() => {
-    console.log('🔄 BRANDS CAMBIARON:', {
-      newCount: brands?.length || 0,
-      brands: brands?.map(b => ({ id: b.id, name: b.name })) || [],
-      timestamp: new Date().toISOString()
-    })
-  }, [brands])
+    console.log('🔄 BRANDS CAMBIARON:', brands?.length || 0, 'marcas')
+  }, [brands?.length]) // Solo cuando cambia la cantidad
   const [showForm, setShowForm] = useState(false)
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [dragActive, setDragActive] = useState(false)
-
-  console.log('🎛️  Estados del componente:', {
-    showForm,
-    editingBrand: editingBrand?.id || null,
-    isSubmitting,
-    uploadingImage,
-    dragActive
-  })
 
   const [formData, setFormData] = useState({
     name: '',
