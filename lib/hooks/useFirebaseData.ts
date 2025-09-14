@@ -164,7 +164,7 @@ export function useTestimonials() {
           ...doc.data(),
           createdAt: doc.data().createdAt?.toDate() || new Date(),
           updatedAt: doc.data().updatedAt?.toDate() || new Date(),
-        })) as Testimonial[]
+        })) as unknown as Testimonial[]
         
         setTestimonials(testimonialsData)
         setLoading(false)
@@ -199,7 +199,7 @@ export function useNews() {
           publishDate: doc.data().publishDate?.toDate() || new Date(),
           createdAt: doc.data().createdAt?.toDate() || new Date(),
           updatedAt: doc.data().updatedAt?.toDate() || new Date(),
-        })) as NewsItem[]
+        })) as unknown as NewsItem[]
         
         setNews(newsData)
         setLoading(false)
@@ -234,7 +234,7 @@ export function useUsers() {
           createdAt: doc.data().createdAt?.toDate() || new Date(),
           updatedAt: doc.data().updatedAt?.toDate() || new Date(),
           lastLogin: doc.data().lastLogin?.toDate() || null,
-        })) as User[]
+        })) as unknown as User[]
         
         setUsers(usersData)
         setLoading(false)
@@ -303,7 +303,7 @@ export function useJobPostings() {
           deadline: doc.data().deadline?.toDate() || null,
           createdAt: doc.data().createdAt?.toDate() || new Date(),
           updatedAt: doc.data().updatedAt?.toDate() || new Date(),
-        })) as JobPosting[]
+        })) as unknown as JobPosting[]
         
         setJobs(jobsData)
         setLoading(false)
@@ -338,7 +338,7 @@ export function useITTickets() {
           createdAt: doc.data().createdAt?.toDate() || new Date(),
           updatedAt: doc.data().updatedAt?.toDate() || new Date(),
           resolvedAt: doc.data().resolvedAt?.toDate() || null,
-        })) as ITTicket[]
+        })) as unknown as ITTicket[]
         
         setTickets(ticketsData)
         setLoading(false)
