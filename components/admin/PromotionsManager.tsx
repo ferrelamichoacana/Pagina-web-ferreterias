@@ -145,8 +145,16 @@ export default function PromotionsManager() {
   }
 
   const formatDate = (date: Date | string) => {
-    const d = typeof date === 'string' ? new Date(date) : date
-    return d.toLocaleDateString('es-MX')
+    try {
+      const d = typeof date === 'string' ? new Date(date) : date
+      if (!(d instanceof Date) || isNaN(d.getTime())) {
+        return 'Fecha no disponible'
+      }
+      return d.toLocaleDateString('es-MX')
+    } catch (error) {
+      console.error('Error formatting date:', error)
+      return 'Fecha no disponible'
+    }
   }
 
   if (loading) {

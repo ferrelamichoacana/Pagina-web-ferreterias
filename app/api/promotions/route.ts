@@ -98,22 +98,34 @@ export async function GET() {
 
     console.log(`Successfully processed ${promotions.length} promotions`)
 
-    return NextResponse.json({
+    const response = {
       success: true,
       data: promotions,
       count: promotions.length
-    })
+    }
+
+    // Si no hay promociones, agregar información útil
+    if (promotions.length === 0) {
+      console.log('No active promotions found')
+      Object.assign(response, {
+        message: 'No hay promociones activas en este momento',
+        suggestion: 'Crear promociones desde el panel de administración'
+      })
+    }
+
+    return NextResponse.json(response)
 
   } catch (error) {
     console.error('Error fetching promotions:', error)
     
-    // Fallback: devolver array vacío en lugar de error 500
+    // En lugar de error 500, devolver respuesta exitosa con datos vacíos y descripción del error
     return NextResponse.json({
       success: true,
       data: [],
       count: 0,
       warning: 'Error connecting to database, showing empty results',
-      error: error instanceof Error ? error.message : 'Error desconocido'
+      error: error instanceof Error ? error.message : 'Error desconocido',
+      suggestion: 'Verificar configuración de Firebase y variables de entorno'
     })
   }
 }

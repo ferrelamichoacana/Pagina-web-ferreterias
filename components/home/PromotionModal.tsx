@@ -47,12 +47,20 @@ export default function PromotionModal({
 
   // Format dates
   const formatDate = (date: Date | string) => {
-    const d = typeof date === 'string' ? new Date(date) : date
-    return d.toLocaleDateString('es-MX', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
+    try {
+      const d = typeof date === 'string' ? new Date(date) : date
+      if (!(d instanceof Date) || isNaN(d.getTime())) {
+        return 'Fecha no disponible'
+      }
+      return d.toLocaleDateString('es-MX', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    } catch (error) {
+      console.error('Error formatting date:', error)
+      return 'Fecha no disponible'
+    }
   }
 
   if (!isOpen || !promotion) {
