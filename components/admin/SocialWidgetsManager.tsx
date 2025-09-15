@@ -23,15 +23,12 @@ export default function SocialWidgetsManager() {
     try {
       if (editingWidget) {
         // Actualizar widget existente
-        const response = await fetch('/api/social-widgets', {
+        const response = await fetch(`/api/social-widgets?id=${editingWidget.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
-            id: editingWidget.id,
-            ...newWidget
-          })
+          body: JSON.stringify(newWidget)
         })
 
         if (response.ok) {
@@ -103,13 +100,12 @@ export default function SocialWidgetsManager() {
 
   const toggleActive = async (widget: SocialWidget) => {
     try {
-      const response = await fetch('/api/social-widgets', {
+      const response = await fetch(`/api/social-widgets?id=${widget.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          id: widget.id,
           active: !widget.active
         })
       })
