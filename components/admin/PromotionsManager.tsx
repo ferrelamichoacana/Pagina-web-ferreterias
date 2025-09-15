@@ -84,13 +84,33 @@ export default function PromotionsManager() {
 
   const handleEdit = (promotion: Promotion) => {
     setSelectedPromotion(promotion)
+    
+    // Safely convert dates
+    const safeStartDate = (() => {
+      try {
+        const date = new Date(promotion.startDate)
+        return isNaN(date.getTime()) ? new Date().toISOString().split('T')[0] : date.toISOString().split('T')[0]
+      } catch {
+        return new Date().toISOString().split('T')[0]
+      }
+    })()
+    
+    const safeEndDate = (() => {
+      try {
+        const date = new Date(promotion.endDate)
+        return isNaN(date.getTime()) ? new Date().toISOString().split('T')[0] : date.toISOString().split('T')[0]
+      } catch {
+        return new Date().toISOString().split('T')[0]
+      }
+    })()
+    
     setFormData({
       title: promotion.title || '',
       description: promotion.description || '',
       imageUrl: promotion.imageUrl || '',
       contactInfo: promotion.contactInfo || '',
-      startDate: new Date(promotion.startDate).toISOString().split('T')[0],
-      endDate: new Date(promotion.endDate).toISOString().split('T')[0],
+      startDate: safeStartDate,
+      endDate: safeEndDate,
       active: promotion.active
     })
     setIsEditing(true)

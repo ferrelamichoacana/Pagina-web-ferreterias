@@ -86,12 +86,20 @@ export default function NewsSection() {
   const getNewsColor = () => 'bg-primary-100 text-primary-800'
 
   const formatDate = (date: string | Date) => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date
-    return dateObj.toLocaleDateString('es-MX', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
+    try {
+      const dateObj = typeof date === 'string' ? new Date(date) : date
+      if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+        return 'Fecha no disponible'
+      }
+      return dateObj.toLocaleDateString('es-MX', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    } catch (error) {
+      console.error('Error formatting date:', error)
+      return 'Fecha no disponible'
+    }
   }
 
   return (

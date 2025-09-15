@@ -334,7 +334,16 @@ export default function FileGallery({
                       <span>{formatFileSize(file.size)}</span>
                       <span className="flex items-center">
                         <Calendar className="w-3 h-3 mr-1" />
-                        {file.uploadedAt.toLocaleDateString()}
+                        {
+                          (() => {
+                            try {
+                              const date = file.uploadedAt instanceof Date ? file.uploadedAt : new Date(file.uploadedAt)
+                              return isNaN(date.getTime()) ? 'Fecha no disponible' : date.toLocaleDateString()
+                            } catch {
+                              return 'Fecha no disponible'
+                            }
+                          })()
+                        }
                       </span>
                       <span className="flex items-center">
                         <User className="w-3 h-3 mr-1" />

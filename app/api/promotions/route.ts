@@ -53,11 +53,10 @@ export async function GET() {
 
     console.log('Fetching promotions from Firestore...')
 
-    // Obtener promociones activas ordenadas por order
+    // Obtener todas las promociones activas sin orderBy para evitar índice compuesto
     const promotionsSnapshot = await adminDb
       .collection('promotions')
       .where('active', '==', true)
-      .orderBy('order')
       .get()
 
     console.log(`Found ${promotionsSnapshot.size} promotions`)
@@ -95,6 +94,9 @@ export async function GET() {
         console.error('Error processing promotion:', doc.id, error)
       }
     })
+
+    // Ordenar en memoria por el campo order
+    promotions.sort((a, b) => (a.order || 0) - (b.order || 0))
 
     console.log(`Successfully processed ${promotions.length} promotions`)
 

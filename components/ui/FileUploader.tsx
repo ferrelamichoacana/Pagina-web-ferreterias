@@ -335,7 +335,16 @@ export default function FileUploader({
                   <div>
                     <p className="font-medium text-gray-900">{file.name}</p>
                     <p className="text-sm text-gray-500">
-                      {formatFileSize(file.size)} • {file.uploadedAt.toLocaleDateString()}
+                      {formatFileSize(file.size)} • {
+                        (() => {
+                          try {
+                            const date = file.uploadedAt instanceof Date ? file.uploadedAt : new Date(file.uploadedAt)
+                            return isNaN(date.getTime()) ? 'Fecha no disponible' : date.toLocaleDateString()
+                          } catch {
+                            return 'Fecha no disponible'
+                          }
+                        })()
+                      }
                     </p>
                   </div>
                 </div>

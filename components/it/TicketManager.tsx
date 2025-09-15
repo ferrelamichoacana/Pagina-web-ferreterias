@@ -271,7 +271,18 @@ export default function TicketManager() {
                     </div>
                     <div className="flex items-center space-x-1">
                       <ClockIcon className="h-4 w-4" />
-                      <span>{ticket.createdAt.toLocaleDateString()}</span>
+                      <span>
+                        {
+                          (() => {
+                            try {
+                              const date = ticket.createdAt instanceof Date ? ticket.createdAt : new Date(ticket.createdAt)
+                              return isNaN(date.getTime()) ? 'Fecha no disponible' : date.toLocaleDateString()
+                            } catch {
+                              return 'Fecha no disponible'
+                            }
+                          })()
+                        }
+                      </span>
                     </div>
                     {ticket.assignedToName && (
                       <div className="flex items-center space-x-1">
