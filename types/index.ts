@@ -183,8 +183,9 @@ export interface NewsletterSubscriber {
 
 export interface SocialWidget {
   id: string
-  type: 'facebook' | 'instagram'
+  type: 'facebook' | 'instagram' | 'reel'
   url: string
+  iframeCode?: string  // Código iframe completo para reels
   position: number
   active: boolean
   createdAt: Date

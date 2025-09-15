@@ -32,11 +32,26 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { type, url, position, active = true } = await request.json()
+    const { type, url, iframeCode, position, active = true } = await request.json()
 
-    if (!type || !url || position === undefined) {
+    if (!type || position === undefined) {
       return NextResponse.json(
-        { success: false, error: 'Faltan campos requeridos' },
+        { success: false, error: 'Faltan campos requeridos (type, position)' },
+        { status: 400 }
+      )
+    }
+
+    // Validar que tenga URL o iframeCode según el tipo
+    if (type === 'reel' && !iframeCode) {
+      return NextResponse.json(
+        { success: false, error: 'El código iframe es requerido para tipo "reel"' },
+        { status: 400 }
+      )
+    }
+
+    if ((type === 'facebook' || type === 'instagram') && !url) {
+      return NextResponse.json(
+        { success: false, error: 'La URL es requerida para tipos "facebook" e "instagram"' },
         { status: 400 }
       )
     }
@@ -44,7 +59,8 @@ export async function POST(request: NextRequest) {
     const db = getFirestore()
     const newWidget = {
       type,
-      url,
+      url: url || '',
+      iframeCode: iframeCode || '',
       position,
       active,
       createdAt: new Date(),
@@ -56,7 +72,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       widget: { id: docRef.id, ...newWidget },
-      message: 'Widget social creado exitosamente'
+      message: 'Reel creado exitosamente'
     })
   } catch (error) {
     console.error('Error creating social widget:', error)
@@ -79,7 +95,7 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const { type, url, position, active } = await request.json()
+    const { type, url, iframeCode, position, active } = await request.json()
     
     const db = getFirestore()
     const updateData: any = {
@@ -88,6 +104,7 @@ export async function PUT(request: NextRequest) {
 
     if (type !== undefined) updateData.type = type
     if (url !== undefined) updateData.url = url
+    if (iframeCode !== undefined) updateData.iframeCode = iframeCode
     if (position !== undefined) updateData.position = position
     if (active !== undefined) updateData.active = active
 
@@ -95,7 +112,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Widget social actualizado exitosamente'
+      message: 'Reel actualizado exitosamente'
     })
   } catch (error) {
     console.error('Error updating social widget:', error)
@@ -123,7 +140,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Widget social eliminado exitosamente'
+      message: 'Reel eliminado exitosamente'
     })
   } catch (error) {
     console.error('Error deleting social widget:', error)

@@ -10,8 +10,9 @@ export default function SocialWidgetsManager() {
   const [isEditing, setIsEditing] = useState(false)
   const [editingWidget, setEditingWidget] = useState<SocialWidget | null>(null)
   const [newWidget, setNewWidget] = useState({
-    type: 'facebook' as 'facebook' | 'instagram',
+    type: 'reel' as 'facebook' | 'instagram' | 'reel',
     url: '',
+    iframeCode: '',
     position: 1,
     active: true
   })
@@ -36,8 +37,9 @@ export default function SocialWidgetsManager() {
         if (response.ok) {
           setEditingWidget(null)
           setNewWidget({
-            type: 'facebook',
+            type: 'reel',
             url: '',
+            iframeCode: '',
             position: 1,
             active: true
           })
@@ -58,8 +60,9 @@ export default function SocialWidgetsManager() {
 
         if (response.ok) {
           setNewWidget({
-            type: 'facebook',
+            type: 'reel',
             url: '',
+            iframeCode: '',
             position: 1,
             active: true
           })
@@ -79,6 +82,7 @@ export default function SocialWidgetsManager() {
     setNewWidget({
       type: widget.type,
       url: widget.url,
+      iframeCode: widget.iframeCode || '',
       position: widget.position,
       active: widget.active
     })
@@ -88,8 +92,9 @@ export default function SocialWidgetsManager() {
   const cancelEdit = () => {
     setEditingWidget(null)
     setNewWidget({
-      type: 'facebook',
+      type: 'reel',
       url: '',
+      iframeCode: '',
       position: 1,
       active: true
     })
@@ -159,15 +164,15 @@ export default function SocialWidgetsManager() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Widgets de Redes Sociales</h2>
-          <p className="text-gray-600">Gestiona los reels de Facebook/Instagram que aparecen en la página principal</p>
+          <h2 className="text-2xl font-bold text-gray-900">Gestión de Reels Sociales</h2>
+          <p className="text-gray-600">Gestiona los reels y videos que aparecen en el carrusel de la página principal</p>
         </div>
         <button
           onClick={() => setIsEditing(!isEditing)}
           className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 flex items-center space-x-2"
         >
           <PlusIcon className="h-5 w-5" />
-          <span>Agregar Widget</span>
+          <span>Agregar Reel</span>
         </button>
       </div>
 
@@ -175,21 +180,22 @@ export default function SocialWidgetsManager() {
       {isEditing && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-4">
-            {editingWidget ? 'Editar Widget Social' : 'Nuevo Widget Social'}
+            {editingWidget ? 'Editar Reel' : 'Nuevo Reel'}
           </h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tipo de Red Social
+                  Tipo de Contenido
                 </label>
                 <select
                   value={newWidget.type}
-                  onChange={(e) => setNewWidget({ ...newWidget, type: e.target.value as 'facebook' | 'instagram' })}
+                  onChange={(e) => setNewWidget({ ...newWidget, type: e.target.value as 'facebook' | 'instagram' | 'reel' })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
-                  <option value="facebook">Facebook</option>
-                  <option value="instagram">Instagram</option>
+                  <option value="reel">Reel/Video (Iframe)</option>
+                  <option value="facebook">Facebook (URL)</option>
+                  <option value="instagram">Instagram (URL)</option>
                 </select>
               </div>
               
@@ -207,22 +213,45 @@ export default function SocialWidgetsManager() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                URL del Post/Reel o Iframe
-              </label>
-              <textarea
-                value={newWidget.url}
-                onChange={(e) => setNewWidget({ ...newWidget, url: e.target.value })}
-                placeholder="https://www.facebook.com/reel/... o <iframe src=..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                rows={3}
-                required
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                Acepta URLs de Facebook o código iframe completo
-              </p>
-            </div>
+            {/* Campo para URL (para tipos facebook e instagram) */}
+            {(newWidget.type === 'facebook' || newWidget.type === 'instagram') && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  URL del Post/Reel
+                </label>
+                <input
+                  type="url"
+                  value={newWidget.url}
+                  onChange={(e) => setNewWidget({ ...newWidget, url: e.target.value })}
+                  placeholder="https://www.facebook.com/reel/... o https://www.instagram.com/p/..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  required
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  URL directa del post o reel de {newWidget.type === 'facebook' ? 'Facebook' : 'Instagram'}
+                </p>
+              </div>
+            )}
+
+            {/* Campo para código iframe (para tipo reel) */}
+            {newWidget.type === 'reel' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Código Iframe Completo
+                </label>
+                <textarea
+                  value={newWidget.iframeCode}
+                  onChange={(e) => setNewWidget({ ...newWidget, iframeCode: e.target.value })}
+                  placeholder='<iframe src="https://www.facebook.com/plugins/video.php?height=476&href=..." width="267" height="476" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>'
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  rows={4}
+                  required
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Pega aquí el código iframe completo de Facebook. Para obtenerlo: Ve al reel → "..." → "Insertar" → copia todo el código
+                </p>
+              </div>
+            )}
 
             <div className="flex items-center">
               <input
@@ -242,7 +271,7 @@ export default function SocialWidgetsManager() {
                 type="submit"
                 className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700"
               >
-                {editingWidget ? 'Actualizar Widget' : 'Crear Widget'}
+                {editingWidget ? 'Actualizar Reel' : 'Crear Reel'}
               </button>
               <button
                 type="button"
@@ -334,12 +363,12 @@ export default function SocialWidgetsManager() {
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h4 className="font-medium text-blue-900 mb-2">💡 Consejos de uso</h4>
         <ul className="text-sm text-blue-800 space-y-1">
-          <li>• Los widgets se mueven junto con el scroll de la página</li>
-          <li>• Se activan con animaciones cuando aparecen en pantalla</li>
-          <li>• Acepta URLs directas: <code>https://www.facebook.com/reel/123...</code></li>
-          <li>• También acepta código iframe completo de Facebook</li>
-          <li>• Para obtener iframe: Ve al reel → "..." → "Insertar" → copia el código</li>
-          <li>• Los widgets solo aparecen en pantallas medianas y grandes</li>
+          <li>• Los reels aparecen en una sección horizontal con scroll debajo de promociones</li>
+          <li>• <strong>Tipo "Reel/Video (Iframe)"</strong>: Para insertar código iframe completo de Facebook</li>
+          <li>• <strong>Tipo "Facebook/Instagram (URL)"</strong>: Para URLs directas que se convierten automáticamente</li>
+          <li>• Para obtener iframe: Ve al reel → "..." → "Insertar" → copia todo el código</li>
+          <li>• El carrusel permite scroll horizontal para ver todos los reels</li>
+          <li>• Los reels se ordenan por posición (menor número = más a la izquierda)</li>
         </ul>
       </div>
     </div>

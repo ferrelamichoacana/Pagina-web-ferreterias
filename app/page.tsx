@@ -6,7 +6,7 @@ import BrandsSection from '@/components/home/BrandsSection'
 import BranchesSection from '@/components/home/BranchesSection'
 import TestimonialsSection from '@/components/home/TestimonialsSection'
 import NewsSection from '@/components/home/NewsSection'
-import SocialWidgets from '@/components/home/SocialWidgets'
+import ReelsSection from '@/components/home/ReelsSection'
 
 export default function HomePage() {
   return (
@@ -29,8 +29,8 @@ export default function HomePage() {
       {/* Noticias y promociones */}
       <NewsSection />
       
-      {/* Widgets sociales con animaciones */}
-      <SocialWidgets />
+      {/* Sección de reels sociales */}
+      <ReelsSection />
     </ClientLayout>
   )
 }
