@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useLanguage } from '@/lib/i18n/LanguageProvider'
-import { useSystemConfig } from '@/lib/hooks/useSystemConfig'
+import { useSystemConfig } from '@/lib/hooks/useFirebaseData'
 import { 
   BuildingStorefrontIcon,
   UserGroupIcon,
@@ -91,7 +91,7 @@ export default function AboutSection() {
                 </div>
               ) : (
                 <p className="text-gray-600">
-                  {'Proveer materiales de construcción y herramientas de la más alta calidad, con un servicio excepcional que supere las expectativas de nuestros clientes.'}
+                  {config?.content?.missionText || 'Proveer materiales de construcción y herramientas de la más alta calidad, con un servicio excepcional que supere las expectativas de nuestros clientes.'}
                 </p>
               )}
             </div>
@@ -106,7 +106,7 @@ export default function AboutSection() {
                 </div>
               ) : (
                 <p className="text-gray-600">
-                  {'Ser la ferretería líder en México, reconocida por nuestra excelencia en servicio, calidad de productos y compromiso con el desarrollo de nuestras comunidades.'}
+                  {config?.content?.visionText || 'Ser la ferretería líder en México, reconocida por nuestra excelencia en servicio, calidad de productos y compromiso con el desarrollo de nuestras comunidades.'}
                 </p>
               )}
             </div>
@@ -121,7 +121,7 @@ export default function AboutSection() {
                 </div>
               ) : (
                 <p className="text-gray-600">
-                  {'Honestidad, calidad, servicio al cliente, responsabilidad social y compromiso con el crecimiento sostenible de nuestro país.'}
+                  {config?.content?.valuesText || 'Honestidad, calidad, servicio al cliente, responsabilidad social y compromiso con el crecimiento sostenible de nuestro país.'}
                 </p>
               )}
             </div>
