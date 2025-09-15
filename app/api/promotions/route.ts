@@ -45,6 +45,14 @@ async function verifyAuthAndRole(request: NextRequest, requiredRoles: string[] =
 
 export async function GET() {
   try {
+    // Verificar que Firebase Admin esté correctamente configurado
+    if (!adminDb) {
+      console.error('Firebase Admin DB not initialized')
+      throw new Error('Firebase Admin no inicializado correctamente')
+    }
+
+    console.log('Fetching promotions from Firestore...')
+
     // Obtener promociones activas ordenadas por order
     const promotionsSnapshot = await adminDb
       .collection('promotions')
@@ -52,19 +60,43 @@ export async function GET() {
       .orderBy('order')
       .get()
 
+    console.log(`Found ${promotionsSnapshot.size} promotions`)
+
     const promotions: Promotion[] = []
     
     promotionsSnapshot.forEach((doc: any) => {
       const data = doc.data()
-      promotions.push({
-        id: doc.id,
-        ...data,
-        startDate: data.startDate?.toDate() || new Date(),
-        endDate: data.endDate?.toDate() || new Date(),
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date(),
-      } as Promotion)
+      
+      // Manejar conversión de fechas de manera más segura
+      const convertFirestoreDate = (date: any) => {
+        if (!date) return new Date()
+        if (date.toDate && typeof date.toDate === 'function') {
+          return date.toDate()
+        }
+        if (date._seconds) {
+          return new Date(date._seconds * 1000)
+        }
+        if (typeof date === 'string') {
+          return new Date(date)
+        }
+        return new Date(date)
+      }
+
+      try {
+        promotions.push({
+          id: doc.id,
+          ...data,
+          startDate: convertFirestoreDate(data.startDate),
+          endDate: convertFirestoreDate(data.endDate),
+          createdAt: convertFirestoreDate(data.createdAt),
+          updatedAt: convertFirestoreDate(data.updatedAt),
+        } as Promotion)
+      } catch (error) {
+        console.error('Error processing promotion:', doc.id, error)
+      }
     })
+
+    console.log(`Successfully processed ${promotions.length} promotions`)
 
     return NextResponse.json({
       success: true,
@@ -74,14 +106,15 @@ export async function GET() {
 
   } catch (error) {
     console.error('Error fetching promotions:', error)
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Error al obtener promociones',
-        details: error instanceof Error ? error.message : 'Error desconocido'
-      },
-      { status: 500 }
-    )
+    
+    // Fallback: devolver array vacío en lugar de error 500
+    return NextResponse.json({
+      success: true,
+      data: [],
+      count: 0,
+      warning: 'Error connecting to database, showing empty results',
+      error: error instanceof Error ? error.message : 'Error desconocido'
+    })
   }
 }
 

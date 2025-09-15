@@ -34,7 +34,21 @@ export function usePromotions(): UsePromotionsReturn {
       const data = await response.json()
 
       if (data.success) {
-        setPromotions(data.data || [])
+        // Procesar las fechas para asegurar que sean objetos Date válidos
+        const processedPromotions = (data.data || []).map((promotion: any) => ({
+          ...promotion,
+          startDate: new Date(promotion.startDate),
+          endDate: new Date(promotion.endDate),
+          createdAt: promotion.createdAt ? new Date(promotion.createdAt) : new Date(),
+          updatedAt: promotion.updatedAt ? new Date(promotion.updatedAt) : new Date(),
+        }))
+        
+        setPromotions(processedPromotions)
+        
+        // Si hay advertencia, mostrarla en consola
+        if (data.warning) {
+          console.warn('Promotions API warning:', data.warning)
+        }
       } else {
         throw new Error(data.error || 'Error desconocido al obtener promociones')
       }

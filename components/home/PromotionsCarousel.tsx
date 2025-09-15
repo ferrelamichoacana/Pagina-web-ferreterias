@@ -155,7 +155,21 @@ export default function PromotionsCarousel({
                 <div className={`text-sm text-gray-300 flex items-center transition-all duration-300 ${
                   isTransitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
                 }`}>
-                  <span>Válido hasta: {new Date(currentPromotion.endDate).toLocaleDateString('es-MX')}</span>
+                  <span>
+                    Válido hasta: {
+                      (() => {
+                        try {
+                          const date = currentPromotion.endDate instanceof Date 
+                            ? currentPromotion.endDate 
+                            : new Date(currentPromotion.endDate)
+                          return date.toLocaleDateString('es-MX')
+                        } catch (error) {
+                          console.error('Error formatting date:', error)
+                          return 'Fecha no disponible'
+                        }
+                      })()
+                    }
+                  </span>
                 </div>
               </div>
             </div>
