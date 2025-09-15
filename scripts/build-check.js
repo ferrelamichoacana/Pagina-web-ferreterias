@@ -21,6 +21,13 @@ const requiredEnvVars = [
   'NEXT_PUBLIC_FIREBASE_APP_ID'
 ]
 
+// Variables de Cloudinary opcionales (para carga de imágenes)
+const optionalEnvVars = [
+  'NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME',
+  'CLOUDINARY_API_KEY',
+  'CLOUDINARY_API_SECRET'
+]
+
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName])
 
 if (missingVars.length > 0) {
@@ -58,4 +65,17 @@ if (missingVars.length > 0) {
   })
 } else {
   console.log('✅ Todas las variables de entorno de Firebase están configuradas')
+}
+
+// Verificar variables opcionales de Cloudinary
+const missingCloudinaryVars = optionalEnvVars.filter(varName => !process.env[varName])
+
+if (missingCloudinaryVars.length > 0) {
+  console.warn('ℹ️  Variables opcionales de Cloudinary faltantes:')
+  missingCloudinaryVars.forEach(varName => {
+    console.warn(`   - ${varName}`)
+  })
+  console.warn('📋 La carga de imágenes no funcionará sin estas variables.')
+} else {
+  console.log('✅ Variables de Cloudinary configuradas para carga de imágenes')
 }

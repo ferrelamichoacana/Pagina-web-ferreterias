@@ -15,6 +15,7 @@ import {
   ArrowsUpDownIcon
 } from '@heroicons/react/24/outline'
 import Image from 'next/image'
+import ImageUploader from '@/components/ui/ImageUploader'
 
 export default function PromotionsManager() {
   const { user } = useAuth()
@@ -229,15 +230,13 @@ export default function PromotionsManager() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  URL de Imagen
+                  Imagen de la Promoción
                 </label>
-                <input
-                  type="url"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="https://ejemplo.com/imagen.jpg"
-                  required
+                <ImageUploader
+                  onImageUploaded={(imageUrl) => setFormData({ ...formData, imageUrl })}
+                  currentImageUrl={formData.imageUrl}
+                  placeholder="Arrastra una imagen aquí o haz clic para seleccionar"
+                  className="mt-1"
                 />
               </div>
             </div>
