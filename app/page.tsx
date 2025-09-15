@@ -1,5 +1,6 @@
 import React from 'react'
 import ClientLayout from '@/components/layout/ClientLayout'
+import PromotionsSection from '@/components/home/PromotionsSection'
 import HeroSection from '@/components/home/HeroSection'
 import AboutSection from '@/components/home/AboutSection'
 import BrandsSection from '@/components/home/BrandsSection'
@@ -11,6 +12,9 @@ import ReelsSection from '@/components/home/ReelsSection'
 export default function HomePage() {
   return (
     <ClientLayout>
+      {/* Sección de promociones con carousel */}
+      <PromotionsSection />
+      
       {/* Sección principal con logo y eslogan */}
       <HeroSection />
       

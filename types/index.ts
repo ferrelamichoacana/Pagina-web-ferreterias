@@ -135,11 +135,25 @@ export interface Brand {
   active: boolean
 }
 
+export interface Promotion {
+  id: string
+  title: string
+  description: string
+  imageUrl?: string
+  contactInfo?: string
+  startDate: Date
+  endDate: Date
+  active: boolean
+  order: number
+  createdAt: Date
+  updatedAt: Date
+  createdBy: string
+}
+
 export interface NewsItem {
   id: string
   title: string
   description: string
-  type: 'noticia' | 'promocion'
   imageUrl?: string
   link?: string
   featured?: boolean
@@ -148,6 +162,7 @@ export interface NewsItem {
   order: number
   createdAt: Date
   updatedAt: Date
+  createdBy: string
 }
 
 export interface Testimonial {

@@ -81,27 +81,9 @@ export default function NewsSection() {
   // Usar datos de Firebase o fallback a mock
   const newsItems = error || !news?.length ? mockNewsItems : news
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'promocion':
-        return GiftIcon
-      case 'noticia':
-        return NewspaperIcon
-      default:
-        return MegaphoneIcon
-    }
-  }
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'promocion':
-        return 'bg-accent-100 text-accent-800'
-      case 'noticia':
-        return 'bg-primary-100 text-primary-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
+  // Como ahora solo manejamos noticias, usamos el icono de noticia siempre
+  const getNewsIcon = () => NewspaperIcon
+  const getNewsColor = () => 'bg-primary-100 text-primary-800'
 
   const formatDate = (date: string | Date) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date
@@ -130,16 +112,16 @@ export default function NewsSection() {
           <div className="mb-12">
             {(() => {
               const featuredItem = newsItems.find(item => item.featured)!
-              const TypeIcon = getTypeIcon(featuredItem.type)
+              const NewsIcon = getNewsIcon()
               
               return (
                 <div className="bg-gradient-to-r from-primary-50 to-accent-50 rounded-2xl p-8 md:p-12">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                     <div>
                       <div className="flex items-center space-x-2 mb-4">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getTypeColor(featuredItem.type)}`}>
-                          <TypeIcon className="h-4 w-4 mr-1" />
-                          {featuredItem.type === 'promocion' ? 'Promoción' : 'Noticia'}
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getNewsColor()}`}>
+                          <NewsIcon className="h-4 w-4 mr-1" />
+                          Noticia
                         </span>
                         <span className="text-sm text-gray-500 flex items-center">
                           <CalendarDaysIcon className="h-4 w-4 mr-1" />
@@ -155,7 +137,7 @@ export default function NewsSection() {
                         {featuredItem.description}
                       </p>
                       
-                      {featuredItem.type === 'noticia' && featuredItem.link && (
+                      {featuredItem.link && (
                         <Link
                           href={featuredItem.link}
                           className="btn-primary inline-flex items-center space-x-2"
@@ -169,7 +151,7 @@ export default function NewsSection() {
                     <div className="relative h-64 lg:h-80">
                       {/* Placeholder para imagen destacada */}
                       <div className="w-full h-full bg-gradient-to-br from-primary-200 to-accent-200 rounded-lg flex items-center justify-center">
-                        <TypeIcon className="h-16 w-16 text-white opacity-50" />
+                        <NewsIcon className="h-16 w-16 text-white opacity-50" />
                       </div>
                     </div>
                   </div>
@@ -182,7 +164,7 @@ export default function NewsSection() {
         {/* Grid de noticias */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {newsItems.filter(item => !item.featured).map((item) => {
-            const TypeIcon = getTypeIcon(item.type)
+            const NewsIcon = getNewsIcon()
             
             return (
               <article
@@ -193,16 +175,16 @@ export default function NewsSection() {
                 <div className="relative h-48">
                   {/* Placeholder para imagen */}
                   <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    <TypeIcon className="h-12 w-12 text-gray-400" />
+                    <NewsIcon className="h-12 w-12 text-gray-400" />
                   </div>
                 </div>
                 
                 {/* Contenido */}
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-3">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(item.type)}`}>
-                      <TypeIcon className="h-3 w-3 mr-1" />
-                      {item.type === 'promocion' ? 'Promoción' : 'Noticia'}
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getNewsColor()}`}>
+                      <NewsIcon className="h-3 w-3 mr-1" />
+                      Noticia
                     </span>
                     <span className="text-xs text-gray-500 flex items-center">
                       <CalendarDaysIcon className="h-3 w-3 mr-1" />
@@ -218,7 +200,7 @@ export default function NewsSection() {
                     {item.description}
                   </p>
                   
-                  {item.type === 'noticia' && item.link && (
+                  {item.link && (
                     <Link
                       href={item.link}
                       className="text-primary-600 hover:text-primary-700 font-medium text-sm inline-flex items-center space-x-1 group"

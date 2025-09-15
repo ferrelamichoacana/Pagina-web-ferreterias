@@ -7,6 +7,7 @@ import MaintenancePage from '@/components/ui/MaintenancePage'
 import BackButton from '@/components/ui/BackButton'
 import BranchesManager from './BranchesManager'
 import BrandsManager from './BrandsManager'
+import PromotionsManager from './PromotionsManager'
 import SystemConfigManager from './SystemConfigManager'
 import UsersManager from './UsersManager'
 import FileManagementPage from './FileManagementPage'
@@ -16,6 +17,7 @@ import SocialWidgetsManager from './SocialWidgetsManager'
 import { 
   BuildingStorefrontIcon,
   TagIcon,
+  SpeakerWaveIcon,
   CogIcon,
   UsersIcon,
   ChartBarIcon,
@@ -60,6 +62,12 @@ export default function AdminDashboard() {
       name: 'Marcas',
       icon: TagIcon,
       description: 'Gestionar marcas y logos'
+    },
+    {
+      id: 'promotions',
+      name: 'Promociones',
+      icon: SpeakerWaveIcon,
+      description: 'Gestionar promociones del carousel'
     },
     {
       id: 'users',
@@ -113,6 +121,8 @@ export default function AdminDashboard() {
         return <BranchesManager />
       case 'brands':
         return <BrandsManager />
+      case 'promotions':
+        return <PromotionsManager />
       case 'users':
         return <UsersManager />
       case 'config':
