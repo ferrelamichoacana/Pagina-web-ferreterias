@@ -6,7 +6,7 @@ import BrandsSection from '@/components/home/BrandsSection'
 import BranchesSection from '@/components/home/BranchesSection'
 import TestimonialsSection from '@/components/home/TestimonialsSection'
 import NewsSection from '@/components/home/NewsSection'
-import ReelsSection from '@/components/home/ReelsSection'
+import ReelsDebug from '@/components/home/ReelsDebug'
 
 export default function HomePage() {
   return (
@@ -29,8 +29,8 @@ export default function HomePage() {
       {/* Noticias y promociones */}
       <NewsSection />
       
-      {/* Sección de reels sociales */}
-      <ReelsSection />
+      {/* Debug de reels */}
+      <ReelsDebug />
     </ClientLayout>
   )
 }

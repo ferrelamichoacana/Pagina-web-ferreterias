@@ -371,6 +371,58 @@ export function useSocialWidgets() {
   }
 
   useEffect(() => {
+    const fetchWidgets = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch('/api/social-widgets')
+        
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`)
+        }
+        
+        const data = await response.json()
+        
+        if (data.success) {
+          // Los widgets ya vienen filtrados por activos desde el API
+          setWidgets(data.widgets || [])
+          setError(null)
+        } else {
+          throw new Error(data.error || 'Error desconocido')
+        }
+      } catch (err) {
+        console.error('Error loading social widgets:', err)
+        setError(`Error al cargar widgets sociales: ${err instanceof Error ? err.message : 'Error desconocido'}`)
+        setWidgets([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchWidgets()
+
+    // Opcional: Poll cada 30 segundos para actualizaciones
+    const interval = setInterval(fetchWidgets, 30000)
+    
+    return () => clearInterval(interval)
+  }, [refetchTrigger])
+
+  return { widgets, loading, error, refetch }
+}
+
+// Hook para obtener widgets sociales en el admin (con Firebase directo para tiempo real)
+export function useSocialWidgetsAdmin() {
+  const [widgets, setWidgets] = useState<SocialWidget[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [refetchTrigger, setRefetchTrigger] = useState(0)
+
+  // Función para forzar una recarga de datos
+  const refetch = () => {
+    setRefetchTrigger(prev => prev + 1)
+    setLoading(true)
+  }
+
+  useEffect(() => {
     // Verificar disponibilidad de Firebase
     if (!checkFirebaseAvailability()) {
       setError('Firebase no está configurado')
@@ -390,7 +442,8 @@ export function useSocialWidgets() {
           updatedAt: doc.data().updatedAt?.toDate() || new Date(),
         })) as SocialWidget[]
         
-        setWidgets(widgetsData.filter(w => w.active))
+        // En admin mostramos todos los widgets (activos e inactivos)
+        setWidgets(widgetsData)
         setLoading(false)
         setError(null)
       },

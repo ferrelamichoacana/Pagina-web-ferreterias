@@ -1,12 +1,12 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useSocialWidgets } from '@/lib/hooks/useFirebaseData'
+import { useSocialWidgetsAdmin } from '@/lib/hooks/useFirebaseData'
 import { SocialWidget } from '@/types'
 import { PlusIcon, TrashIcon, EyeIcon, EyeSlashIcon, PencilIcon } from '@heroicons/react/24/outline'
 
 export default function SocialWidgetsManager() {
-  const { widgets, loading, error } = useSocialWidgets()
+  const { widgets, loading, error } = useSocialWidgetsAdmin()
   const [isEditing, setIsEditing] = useState(false)
   const [editingWidget, setEditingWidget] = useState<SocialWidget | null>(null)
   const [newWidget, setNewWidget] = useState({

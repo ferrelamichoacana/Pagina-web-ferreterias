@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useSocialWidgets } from '@/lib/hooks/useFirebaseData'
 import { ChevronLeftIcon, ChevronRightIcon, PlayIcon } from '@heroicons/react/24/outline'
 
@@ -19,6 +19,16 @@ interface ReelItemProps {
 const ReelItem: React.FC<ReelItemProps> = ({ widget }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
+
+  // useEffect para manejar el loading automáticamente
+  useEffect(() => {
+    // Simular un tiempo de carga mínimo y luego quitar el loading
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1500) // 1.5 segundos
+
+    return () => clearTimeout(timer)
+  }, [])
 
   // Función para obtener el iframe desde el código completo o la URL
   const getIframeContent = () => {
@@ -88,7 +98,6 @@ const ReelItem: React.FC<ReelItemProps> = ({ widget }) => {
             <div 
               className="w-full"
               dangerouslySetInnerHTML={{ __html: iframeContent }}
-              onLoad={() => setIsLoading(false)}
             />
           ) : (
             <div className="flex flex-col items-center justify-center h-96 text-gray-500 p-6">
