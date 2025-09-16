@@ -18,7 +18,7 @@ import Image from 'next/image'
 import ImageUploader from '@/components/ui/ImageUploader'
 
 export default function PromotionsManager() {
-  const { user } = useAuth()
+  const { user, firebaseUser } = useAuth()
   const [authToken, setAuthToken] = useState<string>('')
   const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null)
   const [isEditing, setIsEditing] = useState(false)
@@ -35,24 +35,28 @@ export default function PromotionsManager() {
 
   // Obtener el token de Firebase cuando el usuario esté disponible
   React.useEffect(() => {
-    if (user) {
-      // Aquí deberías obtener el token de Firebase del usuario
-      // Por ahora, simulamos que el token está disponible
+    if (firebaseUser) {
       const getToken = async () => {
         try {
-          // En una implementación real, obtendrías el token así:
-          // const token = await user.getIdToken()
-          // setAuthToken(token)
+          console.log('🔑 Obteniendo token de autenticación para:', firebaseUser.email)
           
-          // Por ahora, simulamos un token para testing
-          setAuthToken('simulated-token')
+          // Obtener el token real de Firebase
+          const token = await firebaseUser.getIdToken()
+          console.log('✅ Token obtenido exitosamente')
+          setAuthToken(token)
         } catch (error) {
-          console.error('Error getting auth token:', error)
+          console.error('❌ Error getting auth token:', error)
+          // Fallback: usar token simulado para testing
+          console.log('🔄 Usando token simulado como fallback')
+          setAuthToken('simulated-token')
         }
       }
       getToken()
+    } else {
+      console.log('⚠️ No hay usuario autenticado, limpiando token')
+      setAuthToken('')
     }
-  }, [user])
+  }, [firebaseUser])
 
   const {
     promotions,

@@ -101,7 +101,8 @@ export async function POST(request: NextRequest) {
     console.log('✅ Paso 6 completado: Tamaño válido')
 
     console.log('🔄 Paso 7: Convirtiendo archivo a buffer...')
-    let bytes, buffer
+    let bytes: ArrayBuffer
+    let buffer: Buffer
     try {
       bytes = await file.arrayBuffer()
       buffer = Buffer.from(bytes)
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
     console.log('  - Resource type: image')
     console.log('  - Transformaciones: width 1200, height 800, crop limit, quality auto, format auto')
     
-    let uploadResult
+    let uploadResult: any
     try {
       uploadResult = await new Promise((resolve, reject) => {
         console.log('🚀 Iniciando upload_stream...')
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
               { format: 'auto' }
             ]
           },
-          (error, result) => {
+          (error: any, result: any) => {
             if (error) {
               console.error('❌ Error en upload_stream callback:', error)
               console.error('Error details:', {
