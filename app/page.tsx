@@ -6,7 +6,6 @@ import AboutSection from '@/components/home/AboutSection'
 import BrandsSection from '@/components/home/BrandsSection'
 import BranchesSection from '@/components/home/BranchesSection'
 import TestimonialsSection from '@/components/home/TestimonialsSection'
-import NewsSection from '@/components/home/NewsSection'
 import ReelsSection from '@/components/home/ReelsSection'
 
 export default function HomePage() {
@@ -29,9 +28,6 @@ export default function HomePage() {
       
       {/* Testimonios de clientes */}
       <TestimonialsSection />
-      
-      {/* Noticias y promociones */}
-      <NewsSection />
       
       {/* Sección de reels sociales */}
       <ReelsSection />
