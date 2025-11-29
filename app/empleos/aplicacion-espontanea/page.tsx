@@ -88,7 +88,7 @@ export default function SpontaneousApplicationPage() {
             jobId={spontaneousJobData.id}
             jobTitle={spontaneousJobData.title}
             branchName={spontaneousJobData.branchName}
-            onSubmit={(data) => console.log('Submitting spontaneous application:', data)}
+            onSubmit={async (data) => console.log('Submitting spontaneous application:', data)}
             onCancel={() => window.history.back()}
           />
         </div>
