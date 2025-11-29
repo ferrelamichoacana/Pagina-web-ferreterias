@@ -3,7 +3,15 @@
 import React, { useState } from 'react'
 import { uploadWithPreset } from '@/lib/utils/cloudinary'
 
-export default function JobApplicationForm() {
+type Props = {
+  jobId?: string
+  jobTitle?: string
+  branchName?: string
+  onSubmit?: (applicationData: any) => Promise<void>
+  onCancel?: () => void
+}
+
+export default function JobApplicationForm({ jobId, jobTitle, branchName, onSubmit, onCancel }: Props) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -92,22 +100,33 @@ export default function JobApplicationForm() {
 
       setUploading(false)
 
-      // Enviar datos al API
-      const response = await fetch('/api/job-applications', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          photoUrl,
-          cvUrl
-        })
-      })
+      // Preparar payload de la aplicación (incluye datos de la vacante si están disponibles)
+      const payload = {
+        ...formData,
+        photoUrl,
+        cvUrl,
+        jobId: jobId || null,
+        jobTitle: jobTitle || null,
+        branchName: branchName || null
+      }
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Error al enviar la solicitud')
+      // Si se pasó un handler externo, usarlo (por ejemplo desde la página de aplicar)
+      if (onSubmit) {
+        await onSubmit(payload)
+      } else {
+        // Enviar datos al API
+        const response = await fetch('/api/job-applications', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload)
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Error al enviar la solicitud')
+        }
       }
 
       setSuccess(true)
@@ -367,12 +386,12 @@ export default function JobApplicationForm() {
                 </div>
               </div>
 
-              {/* Botón de envío */}
-              <div className="pt-6">
+              {/* Botón de envío y cancelar */}
+              <div className="pt-6 flex flex-col sm:flex-row gap-3">
                 <button
                   type="submit"
                   disabled={submitting || uploading}
-                  className="w-full bg-primary-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 bg-primary-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {uploading ? (
                     <>
@@ -394,6 +413,16 @@ export default function JobApplicationForm() {
                     'Enviar Solicitud'
                   )}
                 </button>
+
+                {onCancel && (
+                  <button
+                    type="button"
+                    onClick={onCancel}
+                    className="flex-1 border border-gray-300 text-gray-700 py-4 px-6 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                )}
               </div>
             </form>
           )}
