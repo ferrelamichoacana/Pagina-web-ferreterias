@@ -100,6 +100,12 @@ export const imagePresets = {
   document: {
     quality: 'auto',
     format: 'pdf'
+  },
+  
+  // Para solicitudes de empleo
+  job_applications: {
+    quality: 'auto',
+    format: 'auto'
   }
 }
 
