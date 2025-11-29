@@ -7,6 +7,9 @@
  * NOTA: Ejecutar manualmente en Firebase Console o adaptar según necesidad
  */
 
+import { db } from '@/lib/firebase'
+import { doc, updateDoc } from 'firebase/firestore'
+
 // Mapping de catálogos según archivos existentes
 export const brandCatalogMapping = {
   // Cerrajes - Tiene múltiples catálogos
@@ -84,6 +87,10 @@ export async function updateBrandWithCatalogs(
 ) {
   // Esta función se puede usar desde el Admin Panel
   // Para actualizar las marcas con sus catálogos
+  
+  if (!db) {
+    throw new Error('Firebase Firestore no está inicializado')
+  }
   
   const brandRef = doc(db, 'brands', brandId)
   
