@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await resend.emails.send({
       from: 'Bolsa de Trabajo <noreply@ferreteria-michoacana.com>',
       to: 'contacto@ferreteria-michoacana.com', // Correo registrado en Resend
-      replyTo: email,
+      reply_to: email,
       subject: `Nueva Solicitud de Empleo - ${desiredPosition} - ${firstName} ${lastName}`,
       html: emailHtml,
     })
