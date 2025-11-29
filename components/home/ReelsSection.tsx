@@ -207,36 +207,6 @@ export default function ReelsSection() {
             ))}
           </div>
         </div>
-
-        {/* Call to action */}
-        <div className="mt-12 text-center">
-          <div className="bg-gradient-to-r from-primary-600 to-accent-600 rounded-2xl p-8 text-white">
-            <h3 className="text-xl md:text-2xl font-bold mb-4">
-              ¡No te pierdas nuestro contenido!
-            </h3>
-            <p className="text-primary-100 mb-6 max-w-2xl mx-auto">
-              Síguenos en nuestras redes sociales para más contenido exclusivo.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <a
-                href="https://facebook.com/ferreterialamichoacana"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white text-primary-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100"
-              >
-                Facebook
-              </a>
-              <a
-                href="https://instagram.com/ferreterialamichoacana"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white text-primary-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100"
-              >
-                Instagram
-              </a>
-            </div>
-          </div>
-        </div>
       </div>
 
       <style jsx>{`

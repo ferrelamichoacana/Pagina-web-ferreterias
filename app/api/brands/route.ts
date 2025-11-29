@@ -153,6 +153,7 @@ export async function POST(request: NextRequest) {
       description: body.description || '',
       isActive: body.isActive ?? true,
       categories: body.categories || [],
+      catalogos: body.catalogos || null,
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -267,6 +268,14 @@ export async function PUT(request: NextRequest) {
     if (updateData.logo !== undefined) {
       updateData.logoUrl = updateData.logo
       delete updateData.logo
+    }
+
+    // Manejar catálogos
+    if (updateData.catalogos !== undefined) {
+      // Si es un array vacío, establecer a null
+      updateData.catalogos = updateData.catalogos && updateData.catalogos.length > 0 
+        ? updateData.catalogos 
+        : null
     }
 
     // Actualizar timestamp

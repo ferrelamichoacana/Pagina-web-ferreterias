@@ -1,218 +1,224 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createJobApplication, getAllJobApplications, getApplicationsByStatus } from '@/lib/utils/firestore'
+import { Resend } from 'resend'
 
-// POST - Crear nueva aplicación de trabajo
+const resend = new Resend(process.env.RESEND_API_KEY)
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      desiredPosition,
+      experience,
+      message,
+      photoUrl,
+      cvUrl
+    } = body
+
     // Validar campos requeridos
-    const requiredFields = [
-      'jobId',
-      'jobTitle',
-      'fullName',
-      'email',
-      'phone',
-      'city',
-      'yearsOfExperience',
-      'availabilityDate',
-      'education',
-      'experience',
-      'coverLetter',
-      'dataConsent',
-      'backgroundCheck'
-    ]
-
-    for (const field of requiredFields) {
-      if (!body[field]) {
-        return NextResponse.json(
-          { success: false, error: `Campo requerido faltante: ${field}` },
-          { status: 400 }
-        )
-      }
-    }
-
-    // Validar consentimientos
-    if (!body.dataConsent || !body.backgroundCheck) {
+    if (!firstName || !lastName || !email || !phone || !desiredPosition || !cvUrl) {
       return NextResponse.json(
-        { success: false, error: 'Debes aceptar los consentimientos requeridos' },
+        { error: 'Faltan campos requeridos' },
         { status: 400 }
       )
     }
 
-    // Validar email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(body.email)) {
+    // Crear el HTML del correo
+    const emailHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+            }
+            .container {
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .header {
+              background: linear-gradient(135deg, #42542D 0%, #9CB83A 100%);
+              color: white;
+              padding: 30px;
+              text-align: center;
+              border-radius: 8px 8px 0 0;
+            }
+            .content {
+              background: #f9f9f9;
+              padding: 30px;
+              border: 1px solid #e0e0e0;
+            }
+            .section {
+              margin-bottom: 25px;
+              background: white;
+              padding: 20px;
+              border-radius: 8px;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .section-title {
+              color: #42542D;
+              font-size: 18px;
+              font-weight: bold;
+              margin-bottom: 15px;
+              border-bottom: 2px solid #9CB83A;
+              padding-bottom: 8px;
+            }
+            .info-row {
+              margin: 10px 0;
+              padding: 8px 0;
+              border-bottom: 1px solid #f0f0f0;
+            }
+            .info-label {
+              font-weight: bold;
+              color: #555;
+              display: inline-block;
+              width: 150px;
+            }
+            .info-value {
+              color: #333;
+            }
+            .button {
+              display: inline-block;
+              padding: 12px 24px;
+              background-color: #42542D;
+              color: white;
+              text-decoration: none;
+              border-radius: 5px;
+              margin: 10px 5px;
+            }
+            .photo-section {
+              text-align: center;
+              margin: 20px 0;
+            }
+            .photo-section img {
+              max-width: 200px;
+              border-radius: 8px;
+              box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+            .footer {
+              text-align: center;
+              padding: 20px;
+              color: #666;
+              font-size: 12px;
+              background: #f0f0f0;
+              border-radius: 0 0 8px 8px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1 style="margin: 0;">Nueva Solicitud de Empleo</h1>
+              <p style="margin: 10px 0 0 0;">Ferretería La Michoacana</p>
+            </div>
+            
+            <div class="content">
+              ${photoUrl ? `
+                <div class="photo-section">
+                  <img src="${photoUrl}" alt="Foto del candidato" />
+                </div>
+              ` : ''}
+              
+              <div class="section">
+                <div class="section-title">📋 Información Personal</div>
+                <div class="info-row">
+                  <span class="info-label">Nombre Completo:</span>
+                  <span class="info-value">${firstName} ${lastName}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Correo Electrónico:</span>
+                  <span class="info-value">${email}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Teléfono:</span>
+                  <span class="info-value">${phone}</span>
+                </div>
+              </div>
+
+              <div class="section">
+                <div class="section-title">💼 Información Laboral</div>
+                <div class="info-row">
+                  <span class="info-label">Puesto Deseado:</span>
+                  <span class="info-value"><strong>${desiredPosition}</strong></span>
+                </div>
+                ${experience ? `
+                  <div class="info-row">
+                    <span class="info-label">Experiencia:</span>
+                    <span class="info-value">${experience}</span>
+                  </div>
+                ` : ''}
+                ${message ? `
+                  <div class="info-row">
+                    <span class="info-label">Mensaje:</span>
+                    <div style="margin-top: 10px; padding: 15px; background: #f9f9f9; border-left: 4px solid #9CB83A; border-radius: 4px;">
+                      ${message.replace(/\n/g, '<br>')}
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+
+              <div class="section">
+                <div class="section-title">📎 Documentos Adjuntos</div>
+                <div style="text-align: center; margin-top: 15px;">
+                  <a href="${cvUrl}" class="button" target="_blank">
+                    📄 Ver Curriculum Vitae
+                  </a>
+                  ${photoUrl ? `
+                    <a href="${photoUrl}" class="button" target="_blank">
+                      🖼️ Ver Fotografía
+                    </a>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+
+            <div class="footer">
+              <p>Este correo fue enviado desde el formulario de empleo de Ferretería La Michoacana</p>
+              <p>Fecha: ${new Date().toLocaleString('es-MX', { 
+                dateStyle: 'full', 
+                timeStyle: 'short',
+                timeZone: 'America/Mexico_City'
+              })}</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `
+
+    // Enviar correo usando Resend
+    const { data, error } = await resend.emails.send({
+      from: 'Bolsa de Trabajo <noreply@ferreteria-michoacana.com>',
+      to: 'contacto@ferreteria-michoacana.com', // Correo registrado en Resend
+      replyTo: email,
+      subject: `Nueva Solicitud de Empleo - ${desiredPosition} - ${firstName} ${lastName}`,
+      html: emailHtml,
+    })
+
+    if (error) {
+      console.error('Error sending email:', error)
       return NextResponse.json(
-        { success: false, error: 'Email inválido' },
-        { status: 400 }
-      )
-    }
-
-    // Validar teléfono (formato básico)
-    const phoneRegex = /^[\d\s\-\(\)\+]+$/
-    if (!phoneRegex.test(body.phone)) {
-      return NextResponse.json(
-        { success: false, error: 'Teléfono inválido' },
-        { status: 400 }
-      )
-    }
-
-    // Generar ID de aplicación único
-    const applicationId = `APP-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
-
-    // Preparar datos para Firestore (siguiendo el tipo JobApplication)
-    const applicationData = {
-      jobId: body.jobId,
-      jobTitle: body.jobTitle,
-      branchId: body.branchId || '',
-      branchName: body.branchName || '',
-      
-      // Información personal (campos requeridos por JobApplication)
-      applicantName: body.fullName,
-      email: body.email, // Campo requerido
-      phone: body.phone,
-      address: body.address || '',
-      city: body.city,
-      state: body.state || 'Michoacán',
-      
-      // Campos requeridos por el tipo JobApplication
-      educationLevel: (body.education?.level || 'preparatoria') as 'primaria' | 'secundaria' | 'preparatoria' | 'tecnico' | 'licenciatura' | 'posgrado',
-      experience: body.experience || '',
-      desiredSalary: body.expectedSalary ? parseInt(body.expectedSalary) : undefined,
-      availability: body.availabilityDate || 'Inmediata',
-      cvUrl: body.resumeUrl || undefined,
-      status: 'nuevo' as const,
-      notes: ''
-    }
-
-    // Crear aplicación en Firestore
-    const result = await createJobApplication(applicationData)
-
-    if (result.success) {
-      // En producción, aquí se enviaría email de confirmación
-      // await sendApplicationConfirmation(applicationData)
-      
-      return NextResponse.json({
-        success: true,
-        applicationId,
-        message: 'Aplicación enviada exitosamente'
-      })
-    } else {
-      return NextResponse.json(
-        { success: false, error: 'Error al guardar la aplicación' },
+        { error: 'Error al enviar el correo' },
         { status: 500 }
       )
     }
 
+    return NextResponse.json({
+      success: true,
+      messageId: data?.id
+    })
+
   } catch (error) {
-    console.error('Error in job applications API:', error)
+    console.error('Error processing job application:', error)
     return NextResponse.json(
-      { success: false, error: 'Error interno del servidor' },
+      { error: 'Error al procesar la solicitud' },
       { status: 500 }
     )
-  }
-}
-
-// GET - Obtener aplicaciones (para RRHH)
-export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const status = searchParams.get('status')
-    const jobId = searchParams.get('jobId')
-
-    let result
-
-    if (status && status !== 'todas') {
-      // Obtener aplicaciones por estado
-      result = await getApplicationsByStatus(status as any)
-    } else if (jobId) {
-      // Obtener aplicaciones por vacante específica
-      // Esta función se implementaría en firestore.ts
-      result = { success: false, error: 'Not implemented yet' }
-    } else {
-      // Obtener todas las aplicaciones
-      result = await getAllJobApplications()
-    }
-
-    if (result.success) {
-      return NextResponse.json({
-        success: true,
-        applications: result.data
-      })
-    } else {
-      return NextResponse.json(
-        { success: false, error: result.error },
-        { status: 500 }
-      )
-    }
-
-  } catch (error) {
-    console.error('Error getting job applications:', error)
-    return NextResponse.json(
-      { success: false, error: 'Error interno del servidor' },
-      { status: 500 }
-    )
-  }
-}
-
-// PUT - Actualizar estado de aplicación (para RRHH)
-export async function PUT(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const { applicationId, status, notes, hrUserId } = body
-
-    if (!applicationId || !status) {
-      return NextResponse.json(
-        { success: false, error: 'applicationId y status son requeridos' },
-        { status: 400 }
-      )
-    }
-
-    // Validar estados permitidos
-    const validStatuses = ['nueva', 'revisada', 'entrevista', 'rechazada', 'contratada']
-    if (!validStatuses.includes(status)) {
-      return NextResponse.json(
-        { success: false, error: 'Estado inválido' },
-        { status: 400 }
-      )
-    }
-
-    // Actualizar aplicación
-    const result = await updateApplicationStatus(applicationId, status, notes)
-
-    if (result.success) {
-      // En producción, aquí se enviaría email de notificación al candidato
-      // await sendStatusUpdateNotification(applicationId, status)
-      
-      return NextResponse.json({
-        success: true,
-        message: 'Estado actualizado exitosamente'
-      })
-    } else {
-      return NextResponse.json(
-        { success: false, error: result.error },
-        { status: 500 }
-      )
-    }
-
-  } catch (error) {
-    console.error('Error updating application status:', error)
-    return NextResponse.json(
-      { success: false, error: 'Error interno del servidor' },
-      { status: 500 }
-    )
-  }
-}
-
-// Función auxiliar para actualizar estado (se movería a firestore.ts)
-async function updateApplicationStatus(applicationId: string, status: string, notes?: string) {
-  try {
-    // Esta función se implementaría en firestore.ts
-    console.log('Updating application status:', { applicationId, status, notes })
-    return { success: true }
-  } catch (error) {
-    console.error('Error updating application status:', error)
-    return { success: false, error }
   }
 }

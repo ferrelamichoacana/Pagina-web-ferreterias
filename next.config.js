@@ -13,7 +13,16 @@ const nextConfig = {
   
   // Configuración mínima para Vercel
   swcMinify: true,
-  compress: true
+  compress: true,
+
+  // Configuración para react-pdf
+  webpack: (config, { isServer }) => {
+    // Agregar alias para canvas
+    config.resolve.alias.canvas = false
+    config.resolve.alias.encoding = false
+    
+    return config
+  }
 }
 
 module.exports = nextConfig

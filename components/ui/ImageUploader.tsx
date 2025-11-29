@@ -43,7 +43,7 @@ export default function ImageUploader({
   const uploadToCloudinary = async (file: File): Promise<string> => {
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('upload_preset', 'promotions') // Preset para promociones
+    // Removido upload_preset para usar configuración directa de Cloudinary
     formData.append('folder', 'ferreterias/promotions')
 
     const response = await fetch('/api/upload/image', {

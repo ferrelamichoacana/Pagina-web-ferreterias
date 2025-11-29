@@ -133,6 +133,7 @@ export interface Brand {
   description?: string
   website?: string
   active: boolean
+  catalogos?: string[] // Array de nombres de archivos PDF en /public/catalogos
 }
 
 export interface Promotion {

@@ -40,7 +40,8 @@ export default function BrandsManager() {
     category: '',
     description: '',
     website: '',
-    active: true
+    active: true,
+    catalogos: [] as string[]
   })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -66,7 +67,8 @@ export default function BrandsManager() {
       category: '',
       description: '',
       website: '',
-      active: true
+      active: true,
+      catalogos: []
     })
     setEditingBrand(null)
     setShowForm(false)
@@ -79,7 +81,8 @@ export default function BrandsManager() {
       category: brand.category,
       description: brand.description || '',
       website: brand.website || '',
-      active: brand.active
+      active: brand.active,
+      catalogos: brand.catalogos || []
     })
     setEditingBrand(brand)
     setShowForm(true)
@@ -186,7 +189,8 @@ export default function BrandsManager() {
         category: formData.category,
         description: formData.description,
         website: formData.website.trim() || null, // Enviar null si está vacío
-        active: formData.active
+        active: formData.active,
+        catalogos: formData.catalogos.length > 0 ? formData.catalogos : null
       }
 
       console.log('📤 Datos a enviar:', requestData)
@@ -384,6 +388,28 @@ export default function BrandsManager() {
     'Jardinería',
     'Otro'
   ]
+
+  // Catálogos disponibles en public/catalogos
+  const availableCatalogs = [
+    'catalogo cerrajes general.pdf',
+    'catalogo cerrajes iluminacion.pdf',
+    'catalogo cerrajes industrial.pdf',
+    'catalogo cerrajes jaladeras y botones.pdf',
+    'catalogo cerrajes lo mas nuevo.pdf',
+    'catalogo handyhome.pdf',
+    'catalogo sayer.pdf',
+    'catalogo silverline.pdf',
+    'catalogo truper.pdf'
+  ]
+
+  const handleCatalogToggle = (catalog: string) => {
+    setFormData(prev => {
+      const catalogos = prev.catalogos.includes(catalog)
+        ? prev.catalogos.filter(c => c !== catalog)
+        : [...prev.catalogos, catalog]
+      return { ...prev, catalogos }
+    })
+  }
 
   if (loading) {
     return (
@@ -618,6 +644,50 @@ export default function BrandsManager() {
                   />
                   <span className="ml-2 text-sm text-gray-700">Marca activa</span>
                 </label>
+              </div>
+
+              {/* Campo de Catálogos */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Catálogos PDF
+                </label>
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <p className="text-xs text-gray-500 mb-3">
+                    Selecciona los catálogos disponibles para esta marca. Los archivos deben estar en /public/catalogos/
+                  </p>
+                  <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
+                    {availableCatalogs.map((catalog) => (
+                      <label key={catalog} className="flex items-start cursor-pointer hover:bg-gray-100 p-2 rounded">
+                        <input
+                          type="checkbox"
+                          checked={formData.catalogos.includes(catalog)}
+                          onChange={() => handleCatalogToggle(catalog)}
+                          className="mt-0.5 h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                        />
+                        <span className="ml-2 text-sm text-gray-700 break-all">
+                          {catalog}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                  {formData.catalogos.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                      <p className="text-xs font-medium text-gray-700 mb-1">
+                        Seleccionados ({formData.catalogos.length}):
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {formData.catalogos.map((catalog) => (
+                          <span
+                            key={catalog}
+                            className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded"
+                          >
+                            {catalog.replace('.pdf', '').replace(/^catalogo\s*/i, '')}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

@@ -1,16 +1,16 @@
 import React from 'react'
 import ClientLayout from '@/components/layout/ClientLayout'
-import JobListings from '@/components/jobs/JobListings'
+import JobApplicationForm from '@/components/jobs/JobApplicationForm'
 
 export default function JobsPage() {
   return (
     <ClientLayout>
-      <JobListings />
+      <JobApplicationForm />
     </ClientLayout>
   )
 }
 
 export const metadata = {
-  title: 'Empleos - Ferretería La Michoacana',
-  description: 'Únete a nuestro equipo. Oportunidades laborales en todas nuestras sucursales',
+  title: 'Bolsa de Trabajo - Ferretería La Michoacana',
+  description: 'Únete a nuestro equipo. Envíanos tu CV y forma parte de Ferretería La Michoacana',
 }

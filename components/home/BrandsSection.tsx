@@ -1,13 +1,29 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { useLanguage } from '@/lib/i18n/LanguageProvider'
 import { useBrands } from '@/lib/hooks/useFirebaseData'
+import type { Brand } from '@/types'
+
+// Cargar CatalogViewer dinámicamente para evitar problemas de SSR
+const CatalogViewer = dynamic(() => import('./CatalogViewer'), {
+  ssr: false,
+  loading: () => (
+    <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center">
+      <div className="bg-white rounded-lg p-8">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Cargando visor...</p>
+      </div>
+    </div>
+  )
+})
 
 export default function BrandsSection() {
   const { t } = useLanguage()
   const { brands, loading, error } = useBrands()
+  const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null)
 
   if (loading) {
     return (
@@ -89,6 +105,19 @@ export default function BrandsSection() {
                 {(brand as any).description && (
                   <p className="text-xs text-gray-400 mt-1 line-clamp-2">{(brand as any).description}</p>
                 )}
+                
+                {/* Botón de catálogos */}
+                {brand.catalogos && brand.catalogos.length > 0 && (
+                  <button
+                    onClick={() => setSelectedBrand(brand)}
+                    className="mt-3 w-full px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    Ver Catálogo{brand.catalogos.length > 1 ? 's' : ''}
+                  </button>
+                )}
               </div>
             </div>
           ))}
@@ -129,6 +158,15 @@ export default function BrandsSection() {
           </div>
         </div>
       </div>
+
+      {/* Visor de catálogos */}
+      {selectedBrand && selectedBrand.catalogos && selectedBrand.catalogos.length > 0 && (
+        <CatalogViewer
+          catalogs={selectedBrand.catalogos}
+          brandName={selectedBrand.name}
+          onClose={() => setSelectedBrand(null)}
+        />
+      )}
     </section>
   )
 }

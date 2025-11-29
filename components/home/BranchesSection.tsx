@@ -14,7 +14,21 @@ export default function BranchesSection() {
   const { t } = useLanguage()
   const { branches, loading, error } = useBranches()
 
-  const generateMapsUrl = (address: string, city: string, state: string) => {
+  const generateMapsUrl = (branch: any) => {
+    // Link específico para Sucursal Puente
+    if (branch.id === 'puente' || branch.name?.toLowerCase().includes('puente')) {
+      return 'https://www.google.com.mx/maps/place/20%C2%B031\'55.7%22N+100%C2%B026\'29.3%22W/@20.53215,-100.4427675,18z/data=!3m1!4b1!4m4!3m3!8m2!3d20.53215!4d-100.44148?entry=ttu&g_ep=EgoyMDI1MTEyMy4xIKXMDSoASAFQAw%3D%3D'
+    }
+    
+    // Link específico para Sucursal Santa Bárbara
+    if (branch.id === 'santa-barbara' || branch.name?.toLowerCase().includes('santa bárbara') || branch.name?.toLowerCase().includes('santa barbara')) {
+      return 'https://www.google.com/maps/place/20%C2%B031\'43.3%22N+100%C2%B026\'36.2%22W/@20.52868551492534,-100.4433782221262,18z/data=!3m1!4b1!4m4!3m3!8m2!3d20.52868551492534!4d-100.4433782221262?entry=ttu&g_ep=EgoyMDI1MTEyMy4xIKXMDSoASAFQAw%3D%3D'
+    }
+    
+    // Para otras sucursales, generar URL automáticamente
+    const address = branch.address
+    const city = branch.city || 'Morelia'
+    const state = branch.state || 'Michoacán'
     const query = encodeURIComponent(`${address}, ${city}, ${state}, México`)
     return `https://www.google.com/maps/search/?api=1&query=${query}`
   }
@@ -118,7 +132,7 @@ export default function BranchesSection() {
               
               <div className="mt-6 flex space-x-3">
                 <a
-                  href={generateMapsUrl(branch.address, (branch as any).city || 'Morelia', (branch as any).state || 'Michoacán')}
+                  href={generateMapsUrl(branch)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-primary text-sm flex items-center space-x-2 flex-1 justify-center"
